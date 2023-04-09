@@ -29,16 +29,16 @@ ThemeData getThemeData(BuildContext context) => ThemeData.light().copyWith(
         ),
         bodyLarge: TextStyle(
           fontSize: 20.0,
-          color: greyTextColor,
+          color: textColor,
           fontWeight: FontWeight.bold,
         ),
         bodyMedium: TextStyle(
           fontSize: 16.0,
-          color: greyTextColor,
+          color: textColor,
         ),
         bodySmall: TextStyle(
           fontSize: 12.8,
-          color: greyTextColor,
+          color: textColor,
         ),
       ).apply(
         fontFamily: defaultFont,
@@ -61,6 +61,53 @@ ThemeData getThemeData(BuildContext context) => ThemeData.light().copyWith(
             fontSize: 16.0,
             fontWeight: FontWeight.w500,
           ),
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        labelStyle: const TextStyle(
+          color: greyTextColor,
+          fontFamily: defaultFont,
+          fontSize: 12.8,
+          fontWeight: FontWeight.w400,
+        ),
+        floatingLabelStyle: const TextStyle(
+          color: greyTextColor,
+          fontFamily: defaultFont,
+          fontSize: 15.8,
+          fontWeight: FontWeight.w400,
+        ),
+        filled: true,
+        fillColor: textFieldFillColor,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16.0,
+          vertical: 6.0,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(7.5),
+          borderSide: BorderSide.none,
+        ),
+      ),
+      dialogBackgroundColor: backgroundColor,
+      dialogTheme: const DialogTheme(
+        alignment: Alignment.center,
+        elevation: 5,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(7.5)),
+        ),
+        titleTextStyle: TextStyle(
+          fontFamily: defaultFont,
+          fontSize: 20.0,
+          color: textColor,
+        ),
+        contentTextStyle: TextStyle(
+          fontFamily: defaultFont,
+          fontSize: 16.0,
+          color: textColor,
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          disabledForegroundColor: dividerColor,
         ),
       ),
     );
