@@ -27,10 +27,15 @@ class TicketStorageWM
     _ticketList = StateNotifier(initValue: model.ticketList);
     model.ticketDataChanged.listen(_ticketsDataChangedHandler);
     model.errorsOnDownloading.listen(_errorOnDownloadingHandler);
+    _initializeSavedTickets();
     super.initWidgetModel();
   }
 
   //* Internal functions
+  Future<void> _initializeSavedTickets() async {
+    _ticketList.accept(await model.initializeSavedTickets());
+  }
+
   void _ticketsDataChangedHandler(List<Ticket> newTicketList) {
     _ticketList.accept(newTicketList);
   }
@@ -51,6 +56,11 @@ class TicketStorageWM
     try {
       final newTicketList = model.addTicket(newTicketUrl);
       _ticketList.accept(newTicketList);
+      // ignore: use_build_context_synchronously
+      MySnackBar.showSuccess(
+        context,
+        message: 'Билет "$newTicketUrl" успешно добавлен',
+      );
     } on AddedTicketError catch (addedTicketError) {
       // ignore: use_build_context_synchronously
       MySnackBar.showError(

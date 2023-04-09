@@ -17,6 +17,7 @@ dependencies:
   dio: ^5.1.1
   freezed: ^2.3.2
   freezed_annotation: ^2.2.0
+  json_annotation: ^4.8.0
   flutter_svg: ^2.0.4
   another_flushbar: ^1.12.29
   path: ^1.8.2
@@ -24,6 +25,7 @@ dependencies:
   provider: ^6.0.5
   path_provider: ^2.0.14
   collection: ^1.17.0
+  sqflite: ^2.2.6
 
 dev_dependencies:
   flutter_test:

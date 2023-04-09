@@ -12,7 +12,7 @@ import 'package:surf_flutter_study_jam_2023/utils/file_util.dart';
 
 class TicketStorageModel extends ElementaryModel {
   final ITicketRepository _ticketRepository;
-  final List<Ticket> _ticketList = [];
+  List<Ticket> _ticketList = [];
   final StreamController<List<Ticket>> _ticketDataChanged =
       StreamController.broadcast();
   final StreamController<String> _errorsOnDownloading =
@@ -27,7 +27,7 @@ class TicketStorageModel extends ElementaryModel {
   Stream<List<Ticket>> get ticketDataChanged => _ticketDataChanged.stream;
   Stream<String> get errorsOnDownloading => _errorsOnDownloading.stream;
 
-  //? Геттер возращает новый (скопированный) лист, чтобы список в модели и список в виджет-модели не ссылались на одно и то же
+  //? Всегда отдаём новый (скопированный) лист, чтобы список в модели и список в виджет-модели не ссылались на одно и то же
   List<Ticket> get ticketList => List.from(_ticketList);
 
   //* ----------------------------------
@@ -38,7 +38,58 @@ class TicketStorageModel extends ElementaryModel {
     return _ticketList.indexWhere((ticket) => ticket.url == ticketUrl);
   }
 
+  //? Изменяем данные билета и уведомляем ui через stream, так же обновляем данные в БД
+  Ticket _changeTicketAndNotify(
+    Ticket newTicketData, {
+    bool updateInDatabase = false,
+  }) {
+    final ticketIndex = getTicketIndex(newTicketData.url);
+    _ticketList[ticketIndex] = newTicketData;
+    _ticketDataChanged.add(List.from(_ticketList));
+    if (updateInDatabase) {
+      _ticketRepository.updateTicket(newTicketData);
+    }
+    return newTicketData;
+  }
+
   //* ----------------------------------
+
+  Future<List<Ticket>> initializeSavedTickets() async {
+    final ticketsFolder = await getTemporaryDirectory();
+    var savedTickets = await _ticketRepository.getTicketsFromDatabase();
+    for (var i = 0; i < savedTickets.length; i++) {
+      final ticket = savedTickets[i];
+      // **********************
+      //? Если в базе данных есть недокачанные билеты, обнулить их скачивание,
+      //? Потому что докачать билеты после открытия (перезапуска) приложения мы не можем
+      //? По крайней мере, я не могу)
+      if (ticket.downloadStarted &&
+          !ticket.downloaded &&
+          !ticket.errorOnDownloading) {
+        savedTickets[i] = ticket.copyWith(
+          downloadStarted: false,
+          downloadedSize: 0,
+        );
+      }
+      // **********************
+      // **********************
+      //? Если в базе данных есть билеты, которых нет на устройстве (их могут удалить и тп)
+      //? То говорим что они не скачаны
+      if (ticket.downloaded &&
+          !(await FileUtil.fileIsExists(
+            "${ticketsFolder.path}/${ticket.filename}",
+          ))) {
+        savedTickets[i] = ticket.copyWith(
+          downloadStarted: false,
+          downloadedSize: 0,
+          downloaded: false,
+        );
+      }
+      // **********************
+    }
+    _ticketList = savedTickets;
+    return List.from(savedTickets);
+  }
 
   List<Ticket> addTicket(String url) {
     //? Добавляем билет, только если его ещё нет в списке
@@ -47,8 +98,10 @@ class TicketStorageModel extends ElementaryModel {
     if (ticketInList != null) {
       throw AddedTicketError(tikcetName: ticketInList.name);
     }
-    _ticketList.add(Ticket(url: url));
-    //? Опять же, возращаем скопированный список
+    final newTicket = Ticket(url: url);
+    _ticketList.add(newTicket);
+    //? Добавляем билет в БД
+    _ticketRepository.saveTicket(newTicket);
     return List.from(_ticketList);
   }
 
@@ -66,37 +119,39 @@ class TicketStorageModel extends ElementaryModel {
         'Error: ticket not found in ticketList',
         name: 'TicketStorageModel | downloadTicket',
       );
-      //TODO handle error
+      //! Просто добавялем билет, если его нет, не знаю на сколько это безопасно
+      addTicket(url);
       return;
     }
     var ticket = _ticketList[ticketIndex];
-    final tempDirectory = await getTemporaryDirectory();
-    final fullPath = "${tempDirectory.path}/${ticket.filename}'";
+    final ticketsFolder = await getTemporaryDirectory();
+    final fullPath = "${ticketsFolder.path}/${ticket.filename}";
     if (await FileUtil.fileIsExists(fullPath)) {
       log(
         'Warning: File "${ticket.filename}" is already exists, it will be overwritten',
         name: 'TicketStorageModel | downloadTicket',
       );
-      //TODO report to UI
     }
 
-    //? Ставим билету downloadStarted [true] и говорим ui об изменениях в списке билетов
-    ticket = ticket.copyWith(downloadStarted: true);
-    _ticketList[ticketIndex] = ticket;
-    _ticketDataChanged.add(List.from(_ticketList));
+    //? Ставим билету downloadStarted [true]
+    ticket = _changeTicketAndNotify(
+      ticket.copyWith(
+        downloadStarted: true,
+        errorOnDownloading: false,
+      ),
+      updateInDatabase: true,
+    );
 
     final downloadResult = await _ticketRepository.downloadFile(
       ticket: ticket,
       savePath: fullPath,
       onReceiveProgress: (received, total) {
         if (total != -1) {
-          //? Обновляем downloadingProgress у билета и говорим ui об изменениях в списке билетов
-          ticket = ticket.copyWith(
+          //? Обновляем downloadingProgress у билета
+          ticket = _changeTicketAndNotify(ticket.copyWith(
             downloadedSize: received,
             totalSize: total,
-          );
-          _ticketList[ticketIndex] = ticket;
-          _ticketDataChanged.add(List.from(_ticketList));
+          ));
         } else {
           log(
             "total = -1",
@@ -106,16 +161,27 @@ class TicketStorageModel extends ElementaryModel {
       },
     );
 
-    if (downloadResult is SuccessfullyDownloaded) {
-      //? Ставим билету downloaded [true] и говорим ui об изменениях в списке билетов
-      ticket = ticket.copyWith(downloaded: true);
-      _ticketList[ticketIndex] = ticket;
-      _ticketDataChanged.add(List.from(_ticketList));
+    if (downloadResult is FailedDownload) {
+      //? Ставим билету errorOnDownloading [true]
+      ticket = _changeTicketAndNotify(
+        ticket.copyWith(
+          errorOnDownloading: true,
+          downloadStarted: false,
+        ),
+        updateInDatabase: true,
+      );
+      //? Сообщаем ui об ошибке
+      _errorsOnDownloading.add(downloadResult.error);
     } else {
-      //? Ставим билету downloaded [true] и говорим ui об изменениях в списке билетов
-      ticket = ticket.copyWith(errorOnDownloading: true);
-      _ticketList[ticketIndex] = ticket;
-      _ticketDataChanged.add(List.from(_ticketList));
+      //? Ставим билету downloaded [true], и на всякий случай downloadedSize = totalSize
+      //? Потому что иногда downloadedSize бывает больше чем тотал
+      ticket = _changeTicketAndNotify(
+        ticket.copyWith(
+          downloaded: true,
+          downloadedSize: ticket.totalSize,
+        ),
+        updateInDatabase: true,
+      );
     }
   }
 }

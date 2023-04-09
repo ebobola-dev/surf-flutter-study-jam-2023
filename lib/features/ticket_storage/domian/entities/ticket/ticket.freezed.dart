@@ -14,15 +14,23 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
+Ticket _$TicketFromJson(Map<String, dynamic> json) {
+  return _Ticket.fromJson(json);
+}
+
 /// @nodoc
 mixin _$Ticket {
   String get url => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
   bool get downloadStarted => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
   bool get downloaded => throw _privateConstructorUsedError;
   int get totalSize => throw _privateConstructorUsedError;
   int get downloadedSize => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
   bool get errorOnDownloading => throw _privateConstructorUsedError;
 
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
   $TicketCopyWith<Ticket> get copyWith => throw _privateConstructorUsedError;
 }
@@ -34,11 +42,14 @@ abstract class $TicketCopyWith<$Res> {
   @useResult
   $Res call(
       {String url,
-      bool downloadStarted,
-      bool downloaded,
+      @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
+          bool downloadStarted,
+      @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
+          bool downloaded,
       int totalSize,
       int downloadedSize,
-      bool errorOnDownloading});
+      @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
+          bool errorOnDownloading});
 }
 
 /// @nodoc
@@ -98,11 +109,14 @@ abstract class _$$_TicketCopyWith<$Res> implements $TicketCopyWith<$Res> {
   @useResult
   $Res call(
       {String url,
-      bool downloadStarted,
-      bool downloaded,
+      @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
+          bool downloadStarted,
+      @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
+          bool downloaded,
       int totalSize,
       int downloadedSize,
-      bool errorOnDownloading});
+      @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
+          bool errorOnDownloading});
 }
 
 /// @nodoc
@@ -152,24 +166,30 @@ class __$$_TicketCopyWithImpl<$Res>
 }
 
 /// @nodoc
-
+@JsonSerializable()
 class _$_Ticket extends _Ticket {
   const _$_Ticket(
       {required this.url,
-      this.downloadStarted = false,
-      this.downloaded = false,
+      @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
+          this.downloadStarted = false,
+      @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
+          this.downloaded = false,
       this.totalSize = 1,
       this.downloadedSize = 0,
-      this.errorOnDownloading = false})
+      @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
+          this.errorOnDownloading = false})
       : super._();
+
+  factory _$_Ticket.fromJson(Map<String, dynamic> json) =>
+      _$$_TicketFromJson(json);
 
   @override
   final String url;
   @override
-  @JsonKey()
+  @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
   final bool downloadStarted;
   @override
-  @JsonKey()
+  @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
   final bool downloaded;
   @override
   @JsonKey()
@@ -178,7 +198,7 @@ class _$_Ticket extends _Ticket {
   @JsonKey()
   final int downloadedSize;
   @override
-  @JsonKey()
+  @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
   final bool errorOnDownloading;
 
   @override
@@ -204,6 +224,7 @@ class _$_Ticket extends _Ticket {
                 other.errorOnDownloading == errorOnDownloading));
   }
 
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, url, downloadStarted, downloaded,
       totalSize, downloadedSize, errorOnDownloading);
@@ -213,29 +234,44 @@ class _$_Ticket extends _Ticket {
   @pragma('vm:prefer-inline')
   _$$_TicketCopyWith<_$_Ticket> get copyWith =>
       __$$_TicketCopyWithImpl<_$_Ticket>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$_TicketToJson(
+      this,
+    );
+  }
 }
 
 abstract class _Ticket extends Ticket {
   const factory _Ticket(
       {required final String url,
-      final bool downloadStarted,
-      final bool downloaded,
+      @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
+          final bool downloadStarted,
+      @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
+          final bool downloaded,
       final int totalSize,
       final int downloadedSize,
-      final bool errorOnDownloading}) = _$_Ticket;
+      @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
+          final bool errorOnDownloading}) = _$_Ticket;
   const _Ticket._() : super._();
+
+  factory _Ticket.fromJson(Map<String, dynamic> json) = _$_Ticket.fromJson;
 
   @override
   String get url;
   @override
+  @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
   bool get downloadStarted;
   @override
+  @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
   bool get downloaded;
   @override
   int get totalSize;
   @override
   int get downloadedSize;
   @override
+  @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
   bool get errorOnDownloading;
   @override
   @JsonKey(ignore: true)

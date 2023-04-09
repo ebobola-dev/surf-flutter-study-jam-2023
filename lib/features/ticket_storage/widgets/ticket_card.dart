@@ -133,10 +133,16 @@ class TicketCard extends StatelessWidget {
                     AnimatedSize(
                       duration: Animations.mediumSpeed,
                       curve: Animations.curve,
-                      child: isDownloading
+                      child: isDownloading || ticket.errorOnDownloading
                           ? Text(
-                              'Скачивание $downloaedView...',
-                              style: progressStyle,
+                              ticket.errorOnDownloading
+                                  ? 'Ошибка при скачивании'
+                                  : 'Скачивание $downloaedView...',
+                              style: progressStyle.copyWith(
+                                color: ticket.errorOnDownloading
+                                    ? Colors.red
+                                    : null,
+                              ),
                             )
                           : const SizedBox(),
                     ),
