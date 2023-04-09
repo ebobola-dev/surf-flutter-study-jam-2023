@@ -37,7 +37,7 @@ ThemeData getThemeData(BuildContext context) => ThemeData.light().copyWith(
           color: textColor,
         ),
         bodySmall: TextStyle(
-          fontSize: 12.8,
+          fontSize: 14.0,
           color: textColor,
         ),
       ).apply(

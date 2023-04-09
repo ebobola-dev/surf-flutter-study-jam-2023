@@ -7,7 +7,9 @@ class DownloadService {
   final Dio _dio;
   const DownloadService(this._dio);
 
-  Future<void> downloadFile({
+  //? Возращаем true, если успешно скачано, иначе false
+  //? Тут тоже лучше сделать кастомные варианты результата выполенения функции, как в TicketRepository
+  Future<bool> downloadFile({
     required String url,
     required String savePath,
     void Function(int, int)? onReceiveProgress,
@@ -22,11 +24,13 @@ class DownloadService {
       var raf = file.openSync(mode: FileMode.write);
       raf.writeFromSync(response.data);
       await raf.close();
+      return true;
     } catch (e) {
       log(
-        "Error on dowloading",
+        "Error on dowloading: $e",
         name: 'DownloadService | downloadFile',
       );
+      return false;
     }
   }
 }

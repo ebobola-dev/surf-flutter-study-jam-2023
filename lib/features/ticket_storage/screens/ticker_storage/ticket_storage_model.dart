@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:elementary/elementary.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/download_result/download_result.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/errors/added_ticket_error.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/ticket/ticket.dart';
 import 'package:collection/collection.dart';
@@ -14,6 +15,8 @@ class TicketStorageModel extends ElementaryModel {
   final List<Ticket> _ticketList = [];
   final StreamController<List<Ticket>> _ticketDataChanged =
       StreamController.broadcast();
+  final StreamController<String> _errorsOnDownloading =
+      StreamController.broadcast();
 
   TicketStorageModel({
     required ITicketRepository ticketRepository,
@@ -22,6 +25,7 @@ class TicketStorageModel extends ElementaryModel {
   //* --------- GETTERS ----------------
 
   Stream<List<Ticket>> get ticketDataChanged => _ticketDataChanged.stream;
+  Stream<String> get errorsOnDownloading => _errorsOnDownloading.stream;
 
   //? Геттер возращает новый (скопированный) лист, чтобы список в модели и список в виджет-модели не ссылались на одно и то же
   List<Ticket> get ticketList => List.from(_ticketList);
@@ -81,18 +85,18 @@ class TicketStorageModel extends ElementaryModel {
     _ticketList[ticketIndex] = ticket;
     _ticketDataChanged.add(List.from(_ticketList));
 
-    await _ticketRepository.downloadFile(
-      url: url,
+    final downloadResult = await _ticketRepository.downloadFile(
+      ticket: ticket,
       savePath: fullPath,
       onReceiveProgress: (received, total) {
         if (total != -1) {
           //? Обновляем downloadingProgress у билета и говорим ui об изменениях в списке билетов
           ticket = ticket.copyWith(
-            downloadingProgress: (received / total * 100).round(),
+            downloadedSize: received,
+            totalSize: total,
           );
           _ticketList[ticketIndex] = ticket;
           _ticketDataChanged.add(List.from(_ticketList));
-          log('total $total');
         } else {
           log(
             "total = -1",
@@ -101,9 +105,17 @@ class TicketStorageModel extends ElementaryModel {
         }
       },
     );
-    //? Ставим билету downloaded [true] и говорим ui об изменениях в списке билетов
-    ticket = ticket.copyWith(downloaded: true);
-    _ticketList[ticketIndex] = ticket;
-    _ticketDataChanged.add(List.from(_ticketList));
+
+    if (downloadResult is SuccessfullyDownloaded) {
+      //? Ставим билету downloaded [true] и говорим ui об изменениях в списке билетов
+      ticket = ticket.copyWith(downloaded: true);
+      _ticketList[ticketIndex] = ticket;
+      _ticketDataChanged.add(List.from(_ticketList));
+    } else {
+      //? Ставим билету downloaded [true] и говорим ui об изменениях в списке билетов
+      ticket = ticket.copyWith(errorOnDownloading: true);
+      _ticketList[ticketIndex] = ticket;
+      _ticketDataChanged.add(List.from(_ticketList));
+    }
   }
 }

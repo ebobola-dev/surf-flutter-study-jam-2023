@@ -26,12 +26,17 @@ class TicketStorageWM
   void initWidgetModel() {
     _ticketList = StateNotifier(initValue: model.ticketList);
     model.ticketDataChanged.listen(_ticketsDataChangedHandler);
+    model.errorsOnDownloading.listen(_errorOnDownloadingHandler);
     super.initWidgetModel();
   }
 
   //* Internal functions
   void _ticketsDataChangedHandler(List<Ticket> newTicketList) {
     _ticketList.accept(newTicketList);
+  }
+
+  void _errorOnDownloadingHandler(String error) {
+    MySnackBar.showError(context, error: error);
   }
 
   //* Ui functions
@@ -73,6 +78,12 @@ class TicketStorageWM
   TextStyle get ticketCardNameStyle => Theme.of(context).textTheme.bodyMedium!;
 
   @override
+  TextStyle get ticketProgressStyle =>
+      Theme.of(context).textTheme.bodySmall!.copyWith(
+            color: Theme.of(context).primaryColor,
+          );
+
+  @override
   Color get addTicketButtonIconColor =>
       Theme.of(context).colorScheme.background;
 
@@ -99,6 +110,7 @@ abstract class ITicketStorageWM extends IWidgetModel {
   TextStyle get headerStyle;
   TextStyle get emptyTicketListStyle;
   TextStyle get ticketCardNameStyle;
+  TextStyle get ticketProgressStyle;
   Color get addTicketButtonIconColor;
   Color get ticketCardIconsColor;
   Color get ticketCardDownloadingIconColor;

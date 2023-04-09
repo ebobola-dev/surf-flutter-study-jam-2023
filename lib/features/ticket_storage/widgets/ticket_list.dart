@@ -36,6 +36,7 @@ class TicketList extends StatelessWidget {
               ),
               downloadingColor: ticketStorageWM.ticketCardDownloadingIconColor,
               downloadedColor: ticketStorageWM.ticketCardDownloadedIconColor,
+              progressStyle: ticketStorageWM.ticketProgressStyle,
             );
           },
           separatorBuilder: (_, __) => const SizedBox(height: 12.0),
