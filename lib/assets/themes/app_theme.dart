@@ -43,6 +43,9 @@ ThemeData getThemeData(BuildContext context) => ThemeData.light().copyWith(
       ).apply(
         fontFamily: defaultFont,
       ),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: primaryColor,
+      ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           disabledBackgroundColor: dividerColor,
@@ -109,6 +112,13 @@ ThemeData getThemeData(BuildContext context) => ThemeData.light().copyWith(
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           disabledForegroundColor: dividerColor,
+        ),
+      ),
+      cardTheme: CardTheme(
+        color: backgroundColor,
+        elevation: 5,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(7.5),
         ),
       ),
     );

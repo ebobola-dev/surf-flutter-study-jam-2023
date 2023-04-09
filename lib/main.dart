@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:surf_flutter_study_jam_2023/app_providers.dart';
 import 'package:surf_flutter_study_jam_2023/assets/themes/app_theme.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/screens/ticker_storage/ticket_storage_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const AppProviders(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {

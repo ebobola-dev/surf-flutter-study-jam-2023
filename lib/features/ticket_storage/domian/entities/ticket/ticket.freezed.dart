@@ -19,6 +19,8 @@ mixin _$Ticket {
   String get url => throw _privateConstructorUsedError;
   bool get downloadStarted => throw _privateConstructorUsedError;
   bool get downloaded => throw _privateConstructorUsedError;
+  int get downloadingProgress => throw _privateConstructorUsedError;
+  bool get downloadingError => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $TicketCopyWith<Ticket> get copyWith => throw _privateConstructorUsedError;
@@ -29,7 +31,12 @@ abstract class $TicketCopyWith<$Res> {
   factory $TicketCopyWith(Ticket value, $Res Function(Ticket) then) =
       _$TicketCopyWithImpl<$Res, Ticket>;
   @useResult
-  $Res call({String url, bool downloadStarted, bool downloaded});
+  $Res call(
+      {String url,
+      bool downloadStarted,
+      bool downloaded,
+      int downloadingProgress,
+      bool downloadingError});
 }
 
 /// @nodoc
@@ -48,6 +55,8 @@ class _$TicketCopyWithImpl<$Res, $Val extends Ticket>
     Object? url = null,
     Object? downloadStarted = null,
     Object? downloaded = null,
+    Object? downloadingProgress = null,
+    Object? downloadingError = null,
   }) {
     return _then(_value.copyWith(
       url: null == url
@@ -62,6 +71,14 @@ class _$TicketCopyWithImpl<$Res, $Val extends Ticket>
           ? _value.downloaded
           : downloaded // ignore: cast_nullable_to_non_nullable
               as bool,
+      downloadingProgress: null == downloadingProgress
+          ? _value.downloadingProgress
+          : downloadingProgress // ignore: cast_nullable_to_non_nullable
+              as int,
+      downloadingError: null == downloadingError
+          ? _value.downloadingError
+          : downloadingError // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -72,7 +89,12 @@ abstract class _$$_TicketCopyWith<$Res> implements $TicketCopyWith<$Res> {
       __$$_TicketCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String url, bool downloadStarted, bool downloaded});
+  $Res call(
+      {String url,
+      bool downloadStarted,
+      bool downloaded,
+      int downloadingProgress,
+      bool downloadingError});
 }
 
 /// @nodoc
@@ -88,6 +110,8 @@ class __$$_TicketCopyWithImpl<$Res>
     Object? url = null,
     Object? downloadStarted = null,
     Object? downloaded = null,
+    Object? downloadingProgress = null,
+    Object? downloadingError = null,
   }) {
     return _then(_$_Ticket(
       url: null == url
@@ -102,6 +126,14 @@ class __$$_TicketCopyWithImpl<$Res>
           ? _value.downloaded
           : downloaded // ignore: cast_nullable_to_non_nullable
               as bool,
+      downloadingProgress: null == downloadingProgress
+          ? _value.downloadingProgress
+          : downloadingProgress // ignore: cast_nullable_to_non_nullable
+              as int,
+      downloadingError: null == downloadingError
+          ? _value.downloadingError
+          : downloadingError // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -112,7 +144,9 @@ class _$_Ticket extends _Ticket {
   const _$_Ticket(
       {required this.url,
       this.downloadStarted = false,
-      this.downloaded = false})
+      this.downloaded = false,
+      this.downloadingProgress = 0,
+      this.downloadingError = false})
       : super._();
 
   @override
@@ -123,10 +157,16 @@ class _$_Ticket extends _Ticket {
   @override
   @JsonKey()
   final bool downloaded;
+  @override
+  @JsonKey()
+  final int downloadingProgress;
+  @override
+  @JsonKey()
+  final bool downloadingError;
 
   @override
   String toString() {
-    return 'Ticket(url: $url, downloadStarted: $downloadStarted, downloaded: $downloaded)';
+    return 'Ticket(url: $url, downloadStarted: $downloadStarted, downloaded: $downloaded, downloadingProgress: $downloadingProgress, downloadingError: $downloadingError)';
   }
 
   @override
@@ -138,12 +178,16 @@ class _$_Ticket extends _Ticket {
             (identical(other.downloadStarted, downloadStarted) ||
                 other.downloadStarted == downloadStarted) &&
             (identical(other.downloaded, downloaded) ||
-                other.downloaded == downloaded));
+                other.downloaded == downloaded) &&
+            (identical(other.downloadingProgress, downloadingProgress) ||
+                other.downloadingProgress == downloadingProgress) &&
+            (identical(other.downloadingError, downloadingError) ||
+                other.downloadingError == downloadingError));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, url, downloadStarted, downloaded);
+  int get hashCode => Object.hash(runtimeType, url, downloadStarted, downloaded,
+      downloadingProgress, downloadingError);
 
   @JsonKey(ignore: true)
   @override
@@ -156,7 +200,9 @@ abstract class _Ticket extends Ticket {
   const factory _Ticket(
       {required final String url,
       final bool downloadStarted,
-      final bool downloaded}) = _$_Ticket;
+      final bool downloaded,
+      final int downloadingProgress,
+      final bool downloadingError}) = _$_Ticket;
   const _Ticket._() : super._();
 
   @override
@@ -165,6 +211,10 @@ abstract class _Ticket extends Ticket {
   bool get downloadStarted;
   @override
   bool get downloaded;
+  @override
+  int get downloadingProgress;
+  @override
+  bool get downloadingError;
   @override
   @JsonKey(ignore: true)
   _$$_TicketCopyWith<_$_Ticket> get copyWith =>

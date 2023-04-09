@@ -1,6 +1,7 @@
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/screens/ticker_storage/ticket_storage_wm.dart';
+import 'package:surf_flutter_study_jam_2023/features/ticket_storage/widgets/ticket_card.dart';
 
 class TicketList extends StatelessWidget {
   final ITicketStorageWM ticketStorageWM;
@@ -13,9 +14,9 @@ class TicketList extends StatelessWidget {
   Widget build(BuildContext context) {
     return StateNotifierBuilder(
       listenableState: ticketStorageWM.ticketList,
-      builder: (_, ticketListState) {
-        final tickedListisEmpty = ticketListState!.isEmpty;
-        if (tickedListisEmpty) {
+      builder: (_, ticketList) {
+        final ticketListisEmpty = ticketList!.isEmpty;
+        if (ticketListisEmpty) {
           return Center(
             child: Text(
               "Нет билетов",
@@ -23,8 +24,22 @@ class TicketList extends StatelessWidget {
             ),
           );
         }
-        //TODO show ticket list
-        return Container();
+        return ListView.separated(
+          itemCount: ticketList.length,
+          itemBuilder: (context, index) {
+            return TicketCard(
+              ticket: ticketList[index],
+              nameStyle: ticketStorageWM.ticketCardNameStyle,
+              iconsColor: ticketStorageWM.ticketCardIconsColor,
+              onDownloadTap: () => ticketStorageWM.onDownloadTicketTap(
+                ticketList[index].url,
+              ),
+              downloadingColor: ticketStorageWM.ticketCardDownloadingIconColor,
+              downloadedColor: ticketStorageWM.ticketCardDownloadedIconColor,
+            );
+          },
+          separatorBuilder: (_, __) => const SizedBox(height: 12.0),
+        );
       },
     );
   }

@@ -19,6 +19,11 @@ dependencies:
   freezed_annotation: ^2.2.0
   flutter_svg: ^2.0.4
   another_flushbar: ^1.12.29
+  path: ^1.8.2
+
+  provider: ^6.0.5
+  path_provider: ^2.0.14
+  collection: ^1.17.0
 
 dev_dependencies:
   flutter_test:
