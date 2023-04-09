@@ -30,7 +30,7 @@ class TicketList extends StatelessWidget {
             return TicketCard(
               ticket: ticketList[index],
               nameStyle: ticketStorageWM.ticketCardNameStyle,
-              iconsColor: ticketStorageWM.ticketCardIconsColor,
+              iconsColor: ticketStorageWM.iconColor,
               onDownloadTap: () => ticketStorageWM.onDownloadTicketTap(
                 ticketList[index].url,
               ),

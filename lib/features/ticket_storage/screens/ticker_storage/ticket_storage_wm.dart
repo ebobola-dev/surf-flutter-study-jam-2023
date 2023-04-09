@@ -75,6 +75,13 @@ class TicketStorageWM
     await model.downloadTicket(ticketUrl);
   }
 
+  @override
+  Future<void> onDownloadAllTap() async {
+    await Future.wait(model.ticketList.map(
+      (ticket) => model.downloadTicket(ticket.url),
+    ));
+  }
+
   //* ------------- GETTERS -------------
 
   //* Ui styles
@@ -98,7 +105,7 @@ class TicketStorageWM
       Theme.of(context).colorScheme.background;
 
   @override
-  Color get ticketCardIconsColor => Theme.of(context).colorScheme.secondary;
+  Color get iconColor => Theme.of(context).colorScheme.secondary;
 
   @override
   Color get ticketCardDownloadingIconColor => Colors.blue;
@@ -115,6 +122,7 @@ abstract class ITicketStorageWM extends IWidgetModel {
   //* Functions
   Future<void> onAddTicketTap();
   Future<void> onDownloadTicketTap(String ticketUrl);
+  Future<void> onDownloadAllTap();
 
   //* Ui styles
   TextStyle get headerStyle;
@@ -122,7 +130,7 @@ abstract class ITicketStorageWM extends IWidgetModel {
   TextStyle get ticketCardNameStyle;
   TextStyle get ticketProgressStyle;
   Color get addTicketButtonIconColor;
-  Color get ticketCardIconsColor;
+  Color get iconColor;
   Color get ticketCardDownloadingIconColor;
   Color get ticketCardDownloadedIconColor;
 

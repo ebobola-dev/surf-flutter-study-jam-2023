@@ -7,5 +7,6 @@ class IconPaths {
   static const success = "assets/icons/check.svg";
   static const warning = "assets/icons/triangle-warning.svg";
   static const download = "assets/icons/cloud-download-alt.svg";
+  static const downloadAll = "assets/icons/download.svg";
   static const downloaded = "assets/icons/badge-check.svg";
 }
