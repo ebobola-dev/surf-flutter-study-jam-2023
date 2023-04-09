@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:surf_flutter_study_jam_2023/assets/themes/app_theme.dart';
+import 'package:surf_flutter_study_jam_2023/features/ticket_storage/screens/ticker_storage/ticket_storage_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,10 +13,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Async Tour',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const Scaffold(),
+      debugShowCheckedModeBanner: false,
+      theme: getThemeData(context),
+      home: const TicketStorageScreen(),
     );
   }
 }

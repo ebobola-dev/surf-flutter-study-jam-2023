@@ -1,1 +1,1 @@
-const defaultFont = 'CeraRoundPro';
+const defaultFont = 'Nunito';
