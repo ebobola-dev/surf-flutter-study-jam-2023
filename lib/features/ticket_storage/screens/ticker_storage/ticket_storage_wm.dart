@@ -1,5 +1,6 @@
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
+import 'package:surf_flutter_study_jam_2023/features/common/widgets/my_snackbar.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/ticket.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/screens/ticker_storage/ticket_storage_model.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/screens/ticker_storage/ticket_storage_screen.dart';
@@ -26,10 +27,20 @@ class TicketStorageWM
   //* Ui functions
   @override
   Future<void> onAddTicketTap() async {
-    final addResult = await showDialog<String>(
+    final newTicketUrl = await showDialog<String>(
       context: context,
       builder: (context) => const AddTicketDialog(),
     );
+    if (newTicketUrl == null) return;
+    if (!model.addTicket(newTicketUrl)) {
+      // ignore: use_build_context_synchronously
+      MySnackBar.showError(
+        context,
+        error: 'Билет "$newTicketUrl" уже добавлен',
+      );
+      return;
+    }
+    _ticketList.accept(model.ticketList);
   }
 
   //* ------------- GETTERS -------------

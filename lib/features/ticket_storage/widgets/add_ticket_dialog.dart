@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:surf_flutter_study_jam_2023/assets/colors/theme_colors.dart';
 import 'package:surf_flutter_study_jam_2023/assets/srtings/icons_paths.dart';
@@ -17,13 +20,20 @@ class AddTicketDialog extends StatefulWidget {
 
 class _AddTicketDialogState extends State<AddTicketDialog> {
   final textController = TextEditingController();
+  String? urlFromClipboard;
   bool showErase = false;
   bool isValidUrl = false;
 
   @override
   void initState() {
     super.initState();
+
+    //? Слушаем изменения тектового поля
     textController.addListener(() {
+      //? Каждый раз, когда значение поля меняется, проверяем является ли текст в поле ссылкой на pdf файл
+      valid();
+
+      //? Ластик тексового поля, виден только когда поле не пусто
       if (textController.text.isNotEmpty && !showErase) {
         setState(() {
           showErase = true;
@@ -32,6 +42,20 @@ class _AddTicketDialogState extends State<AddTicketDialog> {
       if (textController.text.isEmpty && showErase) {
         setState(() {
           showErase = false;
+        });
+      }
+    });
+
+    //? Получаем данные из буфера обмена
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final clipboardData = await Clipboard.getData(Clipboard.kTextPlain);
+
+      //? Если есть текст в буфере обмена, и он является ссылкой на pdf файл, то запоминаем его
+      if (clipboardData?.text != null &&
+          UriUtil.isValidPdfUri(clipboardData!.text!)) {
+        log('Found pdf url in clipboard! -> ${clipboardData.text}');
+        setState(() {
+          urlFromClipboard = clipboardData.text;
         });
       }
     });
@@ -44,7 +68,10 @@ class _AddTicketDialogState extends State<AddTicketDialog> {
     });
   }
 
-  void add() {}
+  void add() {
+    if (!isValidUrl) return;
+    Navigator.pop(context, textController.text);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,11 +96,25 @@ class _AddTicketDialogState extends State<AddTicketDialog> {
                 content: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    AnimatedSize(
+                      duration: Animations.mediumSpeed,
+                      curve: Animations.curve,
+                      child: !isValidUrl
+                          ? Text(
+                              'Неверная ссылка',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(color: Colors.red),
+                            )
+                          : const SizedBox(),
+                    ),
+                    const SizedBox(height: 16.0),
                     TextField(
                       controller: textController,
                       style: Theme.of(context).textTheme.bodyMedium!,
                       onSubmitted: (_) => add(),
-                      onChanged: (_) => valid(),
+                      minLines: 1,
                       maxLines: 3,
                       decoration: InputDecoration(
                         counterText: '',
@@ -102,20 +143,23 @@ class _AddTicketDialogState extends State<AddTicketDialog> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16.0),
-                    AnimatedSize(
-                      duration: Animations.mediumSpeed,
-                      curve: Animations.curve,
-                      child: !isValidUrl
-                          ? Text(
-                              'Неверная ссылка',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium!
-                                  .copyWith(color: Colors.red),
-                            )
-                          : const SizedBox(),
-                    ),
+                    if (urlFromClipboard != null) ...[
+                      const SizedBox(height: 16.0),
+                      TextButton(
+                        onPressed: () {
+                          textController.text = urlFromClipboard!;
+                        },
+                        child: Text(
+                          urlFromClipboard!,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .copyWith(
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
                 actions: [
@@ -124,7 +168,7 @@ class _AddTicketDialogState extends State<AddTicketDialog> {
                     child: Text("Отмена".toUpperCase()),
                   ),
                   TextButton(
-                    onPressed: isValidUrl ? valid : null,
+                    onPressed: isValidUrl ? add : null,
                     child: Text("Добавить".toUpperCase()),
                   )
                 ],

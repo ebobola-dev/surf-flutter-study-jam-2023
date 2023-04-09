@@ -8,7 +8,7 @@ ThemeData getThemeData(BuildContext context) => ThemeData.light().copyWith(
       scaffoldBackgroundColor: backgroundColor,
       splashColor: primaryColor,
       iconTheme: const IconThemeData(color: iconColor),
-      colorScheme: const ColorScheme.dark(
+      colorScheme: const ColorScheme.light(
         background: backgroundColor,
         primary: primaryColor,
         secondary: secondaryColor,
@@ -76,6 +76,7 @@ ThemeData getThemeData(BuildContext context) => ThemeData.light().copyWith(
           fontSize: 15.8,
           fontWeight: FontWeight.w400,
         ),
+        hintStyle: const TextStyle(color: textColor),
         filled: true,
         fillColor: textFieldFillColor,
         contentPadding: const EdgeInsets.symmetric(
