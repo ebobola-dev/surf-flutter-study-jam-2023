@@ -49,10 +49,10 @@
 #### Модель билета
 <img src="../docs/assets/my_screenshots/ticket_model.png" alt="tiket model" width="400"/>
 
-<br/>**функция класса FileUtil*
+<br/>**функция класса FileUtil*<br/>
 <img src="../docs/assets/my_screenshots/get_filename_without_ext.png" alt="get filename without ext" width="400"/>
 
-<br/>**функция класса UriUtil*
+<br/>**функция класса UriUtil*<br/>
 <img src="../docs/assets/my_screenshots/get_filename_from_uri.png" alt="tiket model" width="400"/>
 
 - **url** - ссылка на файл билета, является уникальной для каждого билета, **никогда не изменяется**
