@@ -55,11 +55,11 @@
 - **errorOnDownloading** - флаг, который поднимается при возникновении ошибки во время скачивания файла, по умолчнанию false, сбрасывается обратно в false, при повторной попытке скачивания, **каждое изменение, меняет данные в базе данных**
 <br/>
 <br/>
-Пробовал использовать вашу архитектуру Elementary, сейчас активно её изучаю) Но не везде, где нужно было, применил её.
+Пробовал использовать вашу архитектуру Elementary, сейчас активно её изучаю) Но не везде, где нужно было, применил её. Возможно не совсем правильно реализовал взаимодествие между списками билетов в модели и виджет модели.
 <br/>
 Использовал пакет another_flushbar, для снекбара сверху экрана.
 <br/>
-Для всех моделей которым нужно сравнение или копирование использровал Frezzed.
+Для всех моделей которым нужно сравнение или копирование использовал Frezzed.
 <br/>
 Так как у меня всего один экран, данные хранятся только в нём, если было бы несколько экранов, для хранения и передачи данных использовал бы Provider, если данных было бы больше, возможно попробовал бы что-нибудь другое.
 <br/>
@@ -67,23 +67,26 @@
 <br/>
 За работу сел сразу как только ёё скинули и закончил в 8 вечера с двумя перерывами на ~час и ~30 минут, перерывы были вынужденные и возможно из-за них мне не хватило времени выполнить остальные пункты(
 <br/>
+Задание было интересное, увлекательное, местами я так входил во вкус, что даже забывал про коммиты...
 <br/>
+<br/>
+
 # Скриншоты
 
-<img src="../docs/assets/add_ticket_dialog.jpg" alt="add ticket dialog" width="200"/>|<img src="../docs/assets/add_ticket_dialog_cp.jpg" alt="add ticket dialog cp" width="200"/>|<img src="../docs/assets/ticket_added_snack.jpg" alt="tikced added" width="200"/>
+<img src="../docs/assets/my_screenshots/add_ticket_dialog.jpg" alt="add ticket dialog" width="200"/>|<img src="../docs/assets/my_screenshots/add_ticket_dialog_cp.jpg" alt="add ticket dialog cp" width="200"/>|<img src="../docs/assets/my_screenshots/ticket_added_snack.jpg" alt="tikced added" width="200"/>
 :-------------------------:|:-------------------------:|:-------------------------:
 Окно добавления билетов | Если в буфере есть ссылка | Добавили билет
 
 <br/>
 <br/>
 
-<img src="../docs/assets/empty.jpg" alt="empty" width="200"/>|<img src="../docs/assets/ticket_already_added.jpg" alt="ticket already added" width="200"/>|<img src="../docs/assets/ticket_downloading.jpg" alt="tikced downloading" width="200"/>
+<img src="../docs/assets/my_screenshots/empty.jpg" alt="empty" width="200"/>|<img src="../docs/assets/my_screenshots/ticket_already_added.jpg" alt="ticket already added" width="200"/>|<img src="../docs/assets/my_screenshots/ticket_downloading.jpg" alt="tikced downloading" width="200"/>
 :-------------------------:|:-------------------------:|:-------------------------:
 Пустой список билетов | Билет уже в списке | Скачивание билета
 
 <br/>
 <br/>
 
-<img src="../docs/assets/downloading_multiple_tickets.jpg" alt="downloading mupltiple tickets" width="200"/>|<img src="../docs/assets/error_on_downloading.jpg" alt="ticket already added" width="200"/>|<img src="../docs/assets/download_all.jpg" alt="downloading all" width="200"/>
+<img src="../docs/assets/my_screenshots/downloading_multiple_tickets.jpg" alt="downloading mupltiple tickets" width="200"/>|<img src="../docs/assets/my_screenshots/error_on_downloading.jpg" alt="ticket already added" width="200"/>|<img src="../docs/assets/my_screenshots/download_all.jpg" alt="downloading all" width="200"/>
 :-------------------------:|:-------------------------:|:-------------------------:
 Скачивание нескольких билетов | Ошибка при скачивании | Скачивание всех билетов
