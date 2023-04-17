@@ -40,14 +40,19 @@ class TicketStorageModel extends ElementaryModel {
     return _ticketList.indexWhere((ticket) => ticket.url == ticketUrl);
   }
 
-  //? Изменяем данные билета и уведомляем ui через stream, так же обновляем данные в БД
+  //? После инициализации все изменения данных какого-то билета происходят только через эту функцию
+  //? Потому что индекс каждого билета может изменится в любой момент (при удалении каких-то билетов)
+  //? Для каждого изменения нам нужно получать корректный индекс билета в списке
   Ticket _changeTicketAndNotify(
     Ticket newTicketData, {
     bool updateInDatabase = false,
   }) {
     final ticketIndex = getTicketIndex(newTicketData.url);
+    //? Меняем данные в списке модели
     _ticketList[ticketIndex] = newTicketData;
+    //? Уведомляем ui
     _ticketDataChanged.add(List.from(_ticketList));
+    //? Обновляем данные в БД
     if (updateInDatabase) {
       _ticketRepository.updateTicket(newTicketData);
     }
@@ -150,6 +155,7 @@ class TicketStorageModel extends ElementaryModel {
       updateInDatabase: true,
     );
 
+    //? Скачиваем файл
     final downloadResult = await _ticketRepository.downloadFile(
       ticket: ticket,
       savePath: ticketFilepath,
@@ -193,6 +199,7 @@ class TicketStorageModel extends ElementaryModel {
   }
 
   Future<void> downloadAllTickets() async {
+    //? Вызываем функцию downloadTicket для всех билетов, у которых доступно скачивание
     await Future.wait(
       _ticketList
           .where(

@@ -19,6 +19,7 @@ class Ticket with _$Ticket {
 
   String get name => FileUtil.getFilenameWithoutExt(url);
   String get filename => UriUtil.getFilenameFromUri(url);
+  //- not used yet
   int get downloadingProgress => (downloadedSize / totalSize * 100).round();
   //? Можем скачать билет, только если его скачивание ещё не начато, или оно завершилось ошибкой
   bool get canDownload => [
