@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:elementary/elementary.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/download_result/download_result.dart';
+import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/downloading_status/downloading_status.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/errors/added_ticket_error.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/ticket/ticket.dart';
 import 'package:collection/collection.dart';
@@ -63,11 +64,9 @@ class TicketStorageModel extends ElementaryModel {
       //? Если в базе данных есть недокачанные билеты, обнулить их скачивание,
       //? Потому что докачать билеты после открытия (перезапуска) приложения мы не можем
       //? По крайней мере, я не могу)
-      if (ticket.downloadStarted &&
-          !ticket.downloaded &&
-          !ticket.errorOnDownloading) {
+      if (ticket.isDownloading) {
         savedTickets[i] = ticket.copyWith(
-          downloadStarted: false,
+          downloadingStatus: DownloadingStatus.notStarted,
           downloadedSize: 0,
         );
       }
@@ -80,9 +79,8 @@ class TicketStorageModel extends ElementaryModel {
             "${ticketsFolder.path}/${ticket.filename}",
           ))) {
         savedTickets[i] = ticket.copyWith(
-          downloadStarted: false,
+          downloadingStatus: DownloadingStatus.notStarted,
           downloadedSize: 0,
-          downloaded: false,
         );
       }
       // **********************
@@ -133,12 +131,9 @@ class TicketStorageModel extends ElementaryModel {
       );
     }
 
-    //? Ставим билету downloadStarted [true]
+    //? Ставим билету DownloadingStatus -> inProgress
     ticket = _changeTicketAndNotify(
-      ticket.copyWith(
-        downloadStarted: true,
-        errorOnDownloading: false,
-      ),
+      ticket.copyWith(downloadingStatus: DownloadingStatus.inProgress),
       updateInDatabase: true,
     );
 
@@ -162,26 +157,29 @@ class TicketStorageModel extends ElementaryModel {
     );
 
     if (downloadResult is FailedDownload) {
-      //? Ставим билету errorOnDownloading [true]
+      //? Ставим билету DownloadingStatus -> hasError
       ticket = _changeTicketAndNotify(
-        ticket.copyWith(
-          errorOnDownloading: true,
-          downloadStarted: false,
-        ),
+        ticket.copyWith(downloadingStatus: DownloadingStatus.hasError),
         updateInDatabase: true,
       );
       //? Сообщаем ui об ошибке
       _errorsOnDownloading.add(downloadResult.error);
     } else {
-      //? Ставим билету downloaded [true], и на всякий случай downloadedSize = totalSize
+      //? Ставим билету DownloadingStatus -> downloaded, и на всякий случай downloadedSize = totalSize
       //? Потому что иногда downloadedSize бывает больше чем тотал
       ticket = _changeTicketAndNotify(
         ticket.copyWith(
-          downloaded: true,
+          downloadingStatus: DownloadingStatus.downloaded,
           downloadedSize: ticket.totalSize,
         ),
         updateInDatabase: true,
       );
     }
+  }
+
+  Future<void> deleteAllTickets() async {
+    await _ticketRepository.deleteAllTickets();
+    _ticketList.clear();
+    _ticketDataChanged.add(List.from(_ticketList));
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:surf_flutter_study_jam_2023/assets/colors/theme_colors.dart';
-import 'package:surf_flutter_study_jam_2023/assets/srtings/fonts.dart';
+import 'package:surf_flutter_study_jam_2023/config/fonts.dart';
 
 ThemeData getThemeData(BuildContext context) => ThemeData.light().copyWith(
       primaryColor: primaryColor,

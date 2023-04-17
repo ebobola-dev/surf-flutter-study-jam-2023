@@ -1,6 +1,7 @@
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:surf_flutter_study_jam_2023/assets/themes/paddings.dart';
 import 'package:surf_flutter_study_jam_2023/features/common/widgets/my_snackbar.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/errors/added_ticket_error.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/ticket/ticket.dart';
@@ -9,6 +10,8 @@ import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/servi
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/screens/ticker_storage/ticket_storage_model.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/screens/ticker_storage/ticket_storage_screen.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/widgets/add_ticket_dialog.dart';
+import 'package:surf_flutter_study_jam_2023/utils/file_util.dart';
+import 'package:surf_flutter_study_jam_2023/utils/screen_sizes.dart';
 
 TicketStorageWM createTicketStorageWM(BuildContext context) =>
     TicketStorageWM(TicketStorageModel(
@@ -45,6 +48,15 @@ class TicketStorageWM
   }
 
   //* Ui functions
+  @override
+  String getSizeAsString(
+    int bytes, {
+    int decimals = 1,
+  }) =>
+      FileUtil.getFileSizeString(
+        bytes: bytes,
+        decimals: decimals,
+      );
 
   @override
   Future<void> onAddTicketTap() async {
@@ -68,6 +80,11 @@ class TicketStorageWM
         error: addedTicketError.message,
       );
     }
+  }
+
+  @override
+  Future<void> onDeleteAllTap() async {
+    await model.deleteAllTickets();
   }
 
   @override
@@ -113,6 +130,13 @@ class TicketStorageWM
   @override
   Color get ticketCardDownloadedIconColor => Colors.green;
 
+  @override
+  double get ticketCardWidth =>
+      getScreenSize(context).width - defaultPadding * 2 - 8.0;
+
+  @override
+  BorderRadius get ticketCardBorderRadius => BorderRadius.circular(7.5);
+
   //* States
   @override
   StateNotifier<List<Ticket>> get ticketList => _ticketList;
@@ -120,9 +144,11 @@ class TicketStorageWM
 
 abstract class ITicketStorageWM extends IWidgetModel {
   //* Functions
+  String getSizeAsString(int bytes);
   Future<void> onAddTicketTap();
   Future<void> onDownloadTicketTap(String ticketUrl);
   Future<void> onDownloadAllTap();
+  Future<void> onDeleteAllTap();
 
   //* Ui styles
   TextStyle get headerStyle;
@@ -133,6 +159,8 @@ abstract class ITicketStorageWM extends IWidgetModel {
   Color get iconColor;
   Color get ticketCardDownloadingIconColor;
   Color get ticketCardDownloadedIconColor;
+  double get ticketCardWidth;
+  BorderRadius get ticketCardBorderRadius;
 
   //* States
   StateNotifier<List<Ticket>> get ticketList;

@@ -21,14 +21,9 @@ Ticket _$TicketFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Ticket {
   String get url => throw _privateConstructorUsedError;
-  @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
-  bool get downloadStarted => throw _privateConstructorUsedError;
-  @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
-  bool get downloaded => throw _privateConstructorUsedError;
+  DownloadingStatus get downloadingStatus => throw _privateConstructorUsedError;
   int get totalSize => throw _privateConstructorUsedError;
   int get downloadedSize => throw _privateConstructorUsedError;
-  @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
-  bool get errorOnDownloading => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -42,14 +37,9 @@ abstract class $TicketCopyWith<$Res> {
   @useResult
   $Res call(
       {String url,
-      @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
-          bool downloadStarted,
-      @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
-          bool downloaded,
+      DownloadingStatus downloadingStatus,
       int totalSize,
-      int downloadedSize,
-      @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
-          bool errorOnDownloading});
+      int downloadedSize});
 }
 
 /// @nodoc
@@ -66,25 +56,19 @@ class _$TicketCopyWithImpl<$Res, $Val extends Ticket>
   @override
   $Res call({
     Object? url = null,
-    Object? downloadStarted = null,
-    Object? downloaded = null,
+    Object? downloadingStatus = null,
     Object? totalSize = null,
     Object? downloadedSize = null,
-    Object? errorOnDownloading = null,
   }) {
     return _then(_value.copyWith(
       url: null == url
           ? _value.url
           : url // ignore: cast_nullable_to_non_nullable
               as String,
-      downloadStarted: null == downloadStarted
-          ? _value.downloadStarted
-          : downloadStarted // ignore: cast_nullable_to_non_nullable
-              as bool,
-      downloaded: null == downloaded
-          ? _value.downloaded
-          : downloaded // ignore: cast_nullable_to_non_nullable
-              as bool,
+      downloadingStatus: null == downloadingStatus
+          ? _value.downloadingStatus
+          : downloadingStatus // ignore: cast_nullable_to_non_nullable
+              as DownloadingStatus,
       totalSize: null == totalSize
           ? _value.totalSize
           : totalSize // ignore: cast_nullable_to_non_nullable
@@ -93,10 +77,6 @@ class _$TicketCopyWithImpl<$Res, $Val extends Ticket>
           ? _value.downloadedSize
           : downloadedSize // ignore: cast_nullable_to_non_nullable
               as int,
-      errorOnDownloading: null == errorOnDownloading
-          ? _value.errorOnDownloading
-          : errorOnDownloading // ignore: cast_nullable_to_non_nullable
-              as bool,
     ) as $Val);
   }
 }
@@ -109,14 +89,9 @@ abstract class _$$_TicketCopyWith<$Res> implements $TicketCopyWith<$Res> {
   @useResult
   $Res call(
       {String url,
-      @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
-          bool downloadStarted,
-      @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
-          bool downloaded,
+      DownloadingStatus downloadingStatus,
       int totalSize,
-      int downloadedSize,
-      @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
-          bool errorOnDownloading});
+      int downloadedSize});
 }
 
 /// @nodoc
@@ -130,25 +105,19 @@ class __$$_TicketCopyWithImpl<$Res>
   @override
   $Res call({
     Object? url = null,
-    Object? downloadStarted = null,
-    Object? downloaded = null,
+    Object? downloadingStatus = null,
     Object? totalSize = null,
     Object? downloadedSize = null,
-    Object? errorOnDownloading = null,
   }) {
     return _then(_$_Ticket(
       url: null == url
           ? _value.url
           : url // ignore: cast_nullable_to_non_nullable
               as String,
-      downloadStarted: null == downloadStarted
-          ? _value.downloadStarted
-          : downloadStarted // ignore: cast_nullable_to_non_nullable
-              as bool,
-      downloaded: null == downloaded
-          ? _value.downloaded
-          : downloaded // ignore: cast_nullable_to_non_nullable
-              as bool,
+      downloadingStatus: null == downloadingStatus
+          ? _value.downloadingStatus
+          : downloadingStatus // ignore: cast_nullable_to_non_nullable
+              as DownloadingStatus,
       totalSize: null == totalSize
           ? _value.totalSize
           : totalSize // ignore: cast_nullable_to_non_nullable
@@ -157,10 +126,6 @@ class __$$_TicketCopyWithImpl<$Res>
           ? _value.downloadedSize
           : downloadedSize // ignore: cast_nullable_to_non_nullable
               as int,
-      errorOnDownloading: null == errorOnDownloading
-          ? _value.errorOnDownloading
-          : errorOnDownloading // ignore: cast_nullable_to_non_nullable
-              as bool,
     ));
   }
 }
@@ -170,14 +135,9 @@ class __$$_TicketCopyWithImpl<$Res>
 class _$_Ticket extends _Ticket {
   const _$_Ticket(
       {required this.url,
-      @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
-          this.downloadStarted = false,
-      @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
-          this.downloaded = false,
+      this.downloadingStatus = DownloadingStatus.notStarted,
       this.totalSize = 1,
-      this.downloadedSize = 0,
-      @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
-          this.errorOnDownloading = false})
+      this.downloadedSize = 0})
       : super._();
 
   factory _$_Ticket.fromJson(Map<String, dynamic> json) =>
@@ -186,24 +146,18 @@ class _$_Ticket extends _Ticket {
   @override
   final String url;
   @override
-  @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
-  final bool downloadStarted;
-  @override
-  @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
-  final bool downloaded;
+  @JsonKey()
+  final DownloadingStatus downloadingStatus;
   @override
   @JsonKey()
   final int totalSize;
   @override
   @JsonKey()
   final int downloadedSize;
-  @override
-  @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
-  final bool errorOnDownloading;
 
   @override
   String toString() {
-    return 'Ticket(url: $url, downloadStarted: $downloadStarted, downloaded: $downloaded, totalSize: $totalSize, downloadedSize: $downloadedSize, errorOnDownloading: $errorOnDownloading)';
+    return 'Ticket(url: $url, downloadingStatus: $downloadingStatus, totalSize: $totalSize, downloadedSize: $downloadedSize)';
   }
 
   @override
@@ -212,22 +166,18 @@ class _$_Ticket extends _Ticket {
         (other.runtimeType == runtimeType &&
             other is _$_Ticket &&
             (identical(other.url, url) || other.url == url) &&
-            (identical(other.downloadStarted, downloadStarted) ||
-                other.downloadStarted == downloadStarted) &&
-            (identical(other.downloaded, downloaded) ||
-                other.downloaded == downloaded) &&
+            (identical(other.downloadingStatus, downloadingStatus) ||
+                other.downloadingStatus == downloadingStatus) &&
             (identical(other.totalSize, totalSize) ||
                 other.totalSize == totalSize) &&
             (identical(other.downloadedSize, downloadedSize) ||
-                other.downloadedSize == downloadedSize) &&
-            (identical(other.errorOnDownloading, errorOnDownloading) ||
-                other.errorOnDownloading == errorOnDownloading));
+                other.downloadedSize == downloadedSize));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, url, downloadStarted, downloaded,
-      totalSize, downloadedSize, errorOnDownloading);
+  int get hashCode => Object.hash(
+      runtimeType, url, downloadingStatus, totalSize, downloadedSize);
 
   @JsonKey(ignore: true)
   @override
@@ -246,14 +196,9 @@ class _$_Ticket extends _Ticket {
 abstract class _Ticket extends Ticket {
   const factory _Ticket(
       {required final String url,
-      @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
-          final bool downloadStarted,
-      @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
-          final bool downloaded,
+      final DownloadingStatus downloadingStatus,
       final int totalSize,
-      final int downloadedSize,
-      @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
-          final bool errorOnDownloading}) = _$_Ticket;
+      final int downloadedSize}) = _$_Ticket;
   const _Ticket._() : super._();
 
   factory _Ticket.fromJson(Map<String, dynamic> json) = _$_Ticket.fromJson;
@@ -261,18 +206,11 @@ abstract class _Ticket extends Ticket {
   @override
   String get url;
   @override
-  @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
-  bool get downloadStarted;
-  @override
-  @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
-  bool get downloaded;
+  DownloadingStatus get downloadingStatus;
   @override
   int get totalSize;
   @override
   int get downloadedSize;
-  @override
-  @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
-  bool get errorOnDownloading;
   @override
   @JsonKey(ignore: true)
   _$$_TicketCopyWith<_$_Ticket> get copyWith =>

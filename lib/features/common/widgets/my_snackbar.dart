@@ -2,7 +2,7 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:surf_flutter_study_jam_2023/assets/colors/theme_colors.dart';
-import 'package:surf_flutter_study_jam_2023/assets/srtings/icons_paths.dart';
+import 'package:surf_flutter_study_jam_2023/config/icons_paths.dart';
 import 'package:surf_flutter_study_jam_2023/assets/themes/paddings.dart';
 
 class MySnackBar {

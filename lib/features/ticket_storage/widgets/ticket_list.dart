@@ -29,14 +29,7 @@ class TicketList extends StatelessWidget {
           itemBuilder: (context, index) {
             return TicketCard(
               ticket: ticketList[index],
-              nameStyle: ticketStorageWM.ticketCardNameStyle,
-              iconsColor: ticketStorageWM.iconColor,
-              onDownloadTap: () => ticketStorageWM.onDownloadTicketTap(
-                ticketList[index].url,
-              ),
-              downloadingColor: ticketStorageWM.ticketCardDownloadingIconColor,
-              downloadedColor: ticketStorageWM.ticketCardDownloadedIconColor,
-              progressStyle: ticketStorageWM.ticketProgressStyle,
+              ticketStorageWM: ticketStorageWM,
             );
           },
           separatorBuilder: (_, __) => const SizedBox(height: 12.0),

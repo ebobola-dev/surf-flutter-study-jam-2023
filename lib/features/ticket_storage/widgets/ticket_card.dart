@@ -2,65 +2,41 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:surf_flutter_study_jam_2023/assets/srtings/icons_paths.dart';
-import 'package:surf_flutter_study_jam_2023/assets/themes/paddings.dart';
+import 'package:surf_flutter_study_jam_2023/config/icons_paths.dart';
 import 'package:surf_flutter_study_jam_2023/config/animations.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/ticket/ticket.dart';
+import 'package:surf_flutter_study_jam_2023/features/ticket_storage/screens/ticker_storage/ticket_storage_wm.dart';
 import 'package:surf_flutter_study_jam_2023/utils/animated_switcher_transition.dart';
-import 'package:surf_flutter_study_jam_2023/utils/file_util.dart';
-import 'package:surf_flutter_study_jam_2023/utils/screen_sizes.dart';
 
 class TicketCard extends StatelessWidget {
   final Ticket ticket;
-  final VoidCallback? onDownloadTap;
-  final TextStyle nameStyle;
-  final TextStyle progressStyle;
-  final Color iconsColor;
-  final Color downloadingColor;
-  final Color downloadedColor;
+  final ITicketStorageWM ticketStorageWM;
   const TicketCard({
     super.key,
     required this.ticket,
-    required this.onDownloadTap,
-    required this.nameStyle,
-    required this.progressStyle,
-    required this.iconsColor,
-    required this.downloadingColor,
-    required this.downloadedColor,
+    required this.ticketStorageWM,
   });
 
   @override
   Widget build(BuildContext context) {
-    final borderRadius = BorderRadius.circular(7.5);
-    final cardWidth = getScreenSize(context).width - defaultPadding * 2 - 8.0;
-    final canDownload = !ticket.downloadStarted;
-    final isDownloading = ticket.downloadStarted &&
-        !ticket.downloaded &&
-        !ticket.errorOnDownloading;
-    var downloadIconColor = iconsColor;
-    if (!canDownload) downloadIconColor = downloadingColor;
-    final downloaedView = '${FileUtil.getFileSizeString(
-      bytes: ticket.downloadedSize,
-      decimals: 1,
-    )} / ${FileUtil.getFileSizeString(
-      bytes: ticket.totalSize,
-      decimals: 1,
-    )}';
+    var downloadIconColor = ticketStorageWM.iconColor;
+    if (!ticket.canDownload)
+      downloadIconColor = ticketStorageWM.ticketCardDownloadingIconColor;
     return Card(
       child: Stack(
         children: [
           //? Background progress
-          if (isDownloading)
+          if (ticket.isDownloading)
             Positioned.fill(
               child: Row(
                 children: [
                   AnimatedContainer(
                     duration: Animations.fastSpeed,
-                    width: cardWidth *
+                    width: ticketStorageWM.ticketCardWidth *
                         math.min(ticket.downloadingProgress * 0.01, 1.0),
                     decoration: BoxDecoration(
                       color: Theme.of(context).primaryColor.withOpacity(.36),
-                      borderRadius: borderRadius,
+                      borderRadius: ticketStorageWM.ticketCardBorderRadius,
                     ),
                   ),
                 ],
@@ -68,10 +44,10 @@ class TicketCard extends StatelessWidget {
             ),
           Material(
             color: Colors.transparent,
-            borderRadius: borderRadius,
+            borderRadius: ticketStorageWM.ticketCardBorderRadius,
             child: InkWell(
               onTap: ticket.downloaded ? () {} : null,
-              borderRadius: borderRadius,
+              borderRadius: ticketStorageWM.ticketCardBorderRadius,
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Column(
@@ -85,7 +61,7 @@ class TicketCard extends StatelessWidget {
                               SvgPicture.asset(
                                 IconPaths.ticket,
                                 colorFilter: ColorFilter.mode(
-                                  iconsColor,
+                                  ticketStorageWM.iconColor,
                                   BlendMode.srcIn,
                                 ),
                               ),
@@ -93,7 +69,7 @@ class TicketCard extends StatelessWidget {
                               Flexible(
                                 child: Text(
                                   ticket.name,
-                                  style: nameStyle,
+                                  style: ticketStorageWM.ticketCardNameStyle,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -103,7 +79,10 @@ class TicketCard extends StatelessWidget {
                           ),
                         ),
                         IconButton(
-                          onPressed: canDownload ? onDownloadTap : null,
+                          onPressed: ticket.canDownload
+                              ? () => ticketStorageWM
+                                  .onDownloadTicketTap(ticket.url)
+                              : null,
                           icon: AnimatedSwitcher(
                             duration: Animations.slowSpeed,
                             switchInCurve: Animations.curve,
@@ -119,7 +98,8 @@ class TicketCard extends StatelessWidget {
                                   key: ValueKey(icon),
                                   colorFilter: ColorFilter.mode(
                                     ticket.downloaded
-                                        ? downloadedColor
+                                        ? ticketStorageWM
+                                            .ticketCardDownloadedIconColor
                                         : downloadIconColor,
                                     BlendMode.srcIn,
                                   ),
@@ -133,13 +113,14 @@ class TicketCard extends StatelessWidget {
                     AnimatedSize(
                       duration: Animations.mediumSpeed,
                       curve: Animations.curve,
-                      child: isDownloading || ticket.errorOnDownloading
+                      child: ticket.isDownloading || ticket.hasDownloadingError
                           ? Text(
-                              ticket.errorOnDownloading
+                              ticket.hasDownloadingError
                                   ? 'Ошибка при скачивании'
-                                  : 'Скачивание $downloaedView...',
-                              style: progressStyle.copyWith(
-                                color: ticket.errorOnDownloading
+                                  : 'Скачивание ${ticketStorageWM.getSizeAsString(ticket.downloadedSize)} / ${ticketStorageWM.getSizeAsString(ticket.totalSize)}...',
+                              style:
+                                  ticketStorageWM.ticketProgressStyle.copyWith(
+                                color: ticket.hasDownloadingError
                                     ? Colors.red
                                     : null,
                               ),

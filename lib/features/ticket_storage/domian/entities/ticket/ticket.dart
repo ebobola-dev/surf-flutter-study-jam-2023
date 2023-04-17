@@ -1,14 +1,10 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/downloading_status/downloading_status.dart';
 import 'package:surf_flutter_study_jam_2023/utils/file_util.dart';
 import 'package:surf_flutter_study_jam_2023/utils/uri_util.dart';
-import 'package:surf_flutter_study_jam_2023/utils/extensions.dart';
 
 part 'ticket.freezed.dart';
 part 'ticket.g.dart';
-
-bool booleanFromInt(int value) => value.toBoolean();
-
-int booleanToInt(bool value) => value.toInt();
 
 @freezed
 class Ticket with _$Ticket {
@@ -16,22 +12,19 @@ class Ticket with _$Ticket {
 
   const factory Ticket({
     required String url,
-    @Default(false)
-    @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
-        bool downloadStarted,
-    @Default(false)
-    @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
-        bool downloaded,
+    @Default(DownloadingStatus.notStarted) DownloadingStatus downloadingStatus,
     @Default(1) int totalSize,
     @Default(0) int downloadedSize,
-    @Default(false)
-    @JsonKey(fromJson: booleanFromInt, toJson: booleanToInt)
-        bool errorOnDownloading,
   }) = _Ticket;
 
   String get name => FileUtil.getFilenameWithoutExt(url);
   String get filename => UriUtil.getFilenameFromUri(url);
   int get downloadingProgress => (downloadedSize / totalSize * 100).round();
+  bool get canDownload => downloadingStatus != DownloadingStatus.inProgress;
+  bool get isDownloading => downloadingStatus == DownloadingStatus.inProgress;
+  bool get downloaded => downloadingStatus == DownloadingStatus.downloaded;
+  bool get hasDownloadingError =>
+      downloadingStatus == DownloadingStatus.downloaded;
 
   factory Ticket.fromJson(Map<String, dynamic> json) => _$TicketFromJson(json);
 }

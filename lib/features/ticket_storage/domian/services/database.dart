@@ -21,17 +21,7 @@ class DatabaseService {
     return await openDatabase(
       join(await getDatabasesPath(), 'ticket.db'),
       onCreate: (db, version) {
-        return db.execute(
-          '''CREATE TABLE ${DatabaseConfig.ticketDatabaseName} (
-          url TEXT PRIMARY KEY,
-          downloadStarted BOOLEAN,
-          downloaded BOOLEAN,
-          totalSize INTEGER,
-          downloadedSize INTEGER,
-          errorOnDownloading BOOLEAN
-          )
-          ''',
-        );
+        return db.execute(DatabaseConfig.createSQLQuery);
       },
       version: 1,
     );

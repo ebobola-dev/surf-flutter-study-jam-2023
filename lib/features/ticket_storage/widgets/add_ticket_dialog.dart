@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:surf_flutter_study_jam_2023/assets/colors/theme_colors.dart';
-import 'package:surf_flutter_study_jam_2023/assets/srtings/icons_paths.dart';
+import 'package:surf_flutter_study_jam_2023/config/icons_paths.dart';
 import 'package:surf_flutter_study_jam_2023/config/animations.dart';
 import 'package:surf_flutter_study_jam_2023/features/common/widgets/scale_on_create.dart';
 import 'package:surf_flutter_study_jam_2023/utils/uri_util.dart';
