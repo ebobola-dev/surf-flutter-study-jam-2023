@@ -1,30 +1,12 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 enum DownloadingStatus {
-  @JsonValue('notStarted')
+  @JsonValue('not_started')
   notStarted,
-  @JsonValue('inProgress')
+  @JsonValue('in_progress')
   inProgress,
   @JsonValue('downloaded')
   downloaded,
-  @JsonValue('hasError')
+  @JsonValue('has_error')
   hasError,
 }
-
-// import 'package:freezed_annotation/freezed_annotation.dart';
-
-// part 'downloading_status.freezed.dart';
-// part 'downloading_status.g.dart';
-
-// @freezed
-// class DownloadingStatus with _$DownloadingStatus {
-//   const DownloadingStatus._();
-
-//   const factory DownloadingStatus.notStarted() = NotStarted;
-//   const factory DownloadingStatus.inProgress() = InProgress;
-//   const factory DownloadingStatus.downloaded() = Downloaded;
-//   const factory DownloadingStatus.hasError() = HasError;
-
-//   factory DownloadingStatus.fromJson(Map<String, dynamic> json) =>
-//       _$DownloadingStatusFromJson(json);
-// }

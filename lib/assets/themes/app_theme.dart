@@ -121,4 +121,12 @@ ThemeData getThemeData(BuildContext context) => ThemeData.light().copyWith(
           borderRadius: BorderRadius.circular(7.5),
         ),
       ),
+      popupMenuTheme: PopupMenuThemeData(
+        color: backgroundColor,
+        textStyle: TextStyle(
+          fontSize: 16.0,
+          fontFamily: defaultFont,
+          color: textColor,
+        ),
+      ),
     );

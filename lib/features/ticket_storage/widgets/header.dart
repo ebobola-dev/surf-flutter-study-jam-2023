@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:surf_flutter_study_jam_2023/config/icons_paths.dart';
+import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/popup_actions/popup_actions.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/screens/ticker_storage/ticket_storage_wm.dart';
 
 class Header extends StatelessWidget {
@@ -19,16 +18,29 @@ class Header extends StatelessWidget {
           style: ticketStorageWM.headerStyle,
         ),
         Spacer(),
-        IconButton(
-          onPressed: ticketStorageWM.onDeleteAllTap,
-          icon: SvgPicture.asset(
-            IconPaths.downloadAll,
-            width: 22.0,
-            colorFilter: ColorFilter.mode(
-              ticketStorageWM.iconColor,
-              BlendMode.srcIn,
-            ),
+        PopupMenuButton<PopupAction>(
+          icon: Icon(
+            Icons.more_vert_rounded,
+            color: ticketStorageWM.iconColor,
           ),
+          onSelected: (popupAction) {
+            switch (popupAction) {
+              case PopupAction.downloadAll:
+                ticketStorageWM.onDownloadAllTap();
+                break;
+              case PopupAction.deleteAll:
+                ticketStorageWM.onDeleteAllTap();
+                break;
+            }
+          },
+          itemBuilder: (context) => PopupAction.values
+              .map(
+                (popupAction) => PopupMenuItem(
+                  value: popupAction,
+                  child: Text(popupAction.description),
+                ),
+              )
+              .toList(),
         ),
       ],
     );

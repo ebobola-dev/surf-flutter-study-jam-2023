@@ -20,11 +20,15 @@ class Ticket with _$Ticket {
   String get name => FileUtil.getFilenameWithoutExt(url);
   String get filename => UriUtil.getFilenameFromUri(url);
   int get downloadingProgress => (downloadedSize / totalSize * 100).round();
-  bool get canDownload => downloadingStatus != DownloadingStatus.inProgress;
+  //? Можем скачать билет, только если его скачивание ещё не начато, или оно завершилось ошибкой
+  bool get canDownload => [
+        DownloadingStatus.notStarted,
+        DownloadingStatus.hasError
+      ].contains(downloadingStatus);
   bool get isDownloading => downloadingStatus == DownloadingStatus.inProgress;
   bool get downloaded => downloadingStatus == DownloadingStatus.downloaded;
   bool get hasDownloadingError =>
-      downloadingStatus == DownloadingStatus.downloaded;
+      downloadingStatus == DownloadingStatus.hasError;
 
   factory Ticket.fromJson(Map<String, dynamic> json) => _$TicketFromJson(json);
 }

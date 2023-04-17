@@ -9,6 +9,7 @@ import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entit
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/ticket/ticket.dart';
 import 'package:collection/collection.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/repositories/ticket_repository.dart';
+import 'package:surf_flutter_study_jam_2023/utils/delays.dart';
 import 'package:surf_flutter_study_jam_2023/utils/file_util.dart';
 
 class TicketStorageModel extends ElementaryModel {
@@ -55,8 +56,13 @@ class TicketStorageModel extends ElementaryModel {
 
   //* ----------------------------------
 
-  Future<List<Ticket>> initializeSavedTickets() async {
+  Future<List<Ticket>> initialize() async {
     final ticketsFolder = await getTemporaryDirectory();
+
+    //? Создаём папку для билетов, если её ещё нет
+    await _ticketRepository.createTicketsDirIfNotExists();
+
+    //? Читаем билеты из бд
     var savedTickets = await _ticketRepository.getTicketsFromDatabase();
     for (var i = 0; i < savedTickets.length; i++) {
       final ticket = savedTickets[i];
@@ -69,6 +75,8 @@ class TicketStorageModel extends ElementaryModel {
           downloadingStatus: DownloadingStatus.notStarted,
           downloadedSize: 0,
         );
+        //? Удаляем файл билета
+        _ticketRepository.deleteTicketFile(ticket);
       }
       // **********************
       // **********************
@@ -82,10 +90,15 @@ class TicketStorageModel extends ElementaryModel {
           downloadingStatus: DownloadingStatus.notStarted,
           downloadedSize: 0,
         );
+        //? Удаляем файл билета
+        _ticketRepository.deleteTicketFile(ticket);
       }
       // **********************
     }
     _ticketList = savedTickets;
+
+    //? Фейковая задержка для отладки отображения чтения из бд
+    await DelayUtil.fakeDelay();
     return List.from(savedTickets);
   }
 
@@ -122,9 +135,9 @@ class TicketStorageModel extends ElementaryModel {
       return;
     }
     var ticket = _ticketList[ticketIndex];
-    final ticketsFolder = await getTemporaryDirectory();
-    final fullPath = "${ticketsFolder.path}/${ticket.filename}";
-    if (await FileUtil.fileIsExists(fullPath)) {
+    final ticketFilepath =
+        "${await _ticketRepository.ticketsDirPath}/${ticket.filename}";
+    if (await FileUtil.fileIsExists(ticketFilepath)) {
       log(
         'Warning: File "${ticket.filename}" is already exists, it will be overwritten',
         name: 'TicketStorageModel | downloadTicket',
@@ -139,7 +152,7 @@ class TicketStorageModel extends ElementaryModel {
 
     final downloadResult = await _ticketRepository.downloadFile(
       ticket: ticket,
-      savePath: fullPath,
+      savePath: ticketFilepath,
       onReceiveProgress: (received, total) {
         if (total != -1) {
           //? Обновляем downloadingProgress у билета
@@ -164,6 +177,8 @@ class TicketStorageModel extends ElementaryModel {
       );
       //? Сообщаем ui об ошибке
       _errorsOnDownloading.add(downloadResult.error);
+      //? Удаляем файл билета
+      _ticketRepository.deleteTicketFile(ticket);
     } else {
       //? Ставим билету DownloadingStatus -> downloaded, и на всякий случай downloadedSize = totalSize
       //? Потому что иногда downloadedSize бывает больше чем тотал
@@ -177,9 +192,24 @@ class TicketStorageModel extends ElementaryModel {
     }
   }
 
+  Future<void> downloadAllTickets() async {
+    await Future.wait(
+      _ticketList
+          .where(
+            (ticket) => ticket.canDownload,
+          )
+          .map(
+            (ticket) => downloadTicket(ticket.url),
+          ),
+    );
+  }
+
   Future<void> deleteAllTickets() async {
+    //? Удаляем в тикеты в бд и файлы на устройстве
     await _ticketRepository.deleteAllTickets();
+    //? Отчищаем в модели
     _ticketList.clear();
+    //? Кидаем в виджет модель
     _ticketDataChanged.add(List.from(_ticketList));
   }
 }

@@ -24,8 +24,8 @@ Map<String, dynamic> _$$_TicketToJson(_$_Ticket instance) => <String, dynamic>{
     };
 
 const _$DownloadingStatusEnumMap = {
-  DownloadingStatus.notStarted: 'notStarted',
-  DownloadingStatus.inProgress: 'inProgress',
+  DownloadingStatus.notStarted: 'not_started',
+  DownloadingStatus.inProgress: 'in_progress',
   DownloadingStatus.downloaded: 'downloaded',
-  DownloadingStatus.hasError: 'hasError',
+  DownloadingStatus.hasError: 'has_error',
 };

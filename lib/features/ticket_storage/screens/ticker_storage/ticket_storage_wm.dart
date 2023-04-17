@@ -1,6 +1,7 @@
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:surf_flutter_study_jam_2023/assets/srtings/tickets.dart';
 import 'package:surf_flutter_study_jam_2023/assets/themes/paddings.dart';
 import 'package:surf_flutter_study_jam_2023/features/common/widgets/my_snackbar.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/errors/added_ticket_error.dart';
@@ -24,19 +25,23 @@ class TicketStorageWM
   TicketStorageWM(super.model);
 
   late final StateNotifier<List<Ticket>> _ticketList;
+  late final StateNotifier<bool> _isInitialization;
 
   @override
   void initWidgetModel() {
     _ticketList = StateNotifier(initValue: model.ticketList);
+    _isInitialization = StateNotifier(initValue: false);
     model.ticketDataChanged.listen(_ticketsDataChangedHandler);
     model.errorsOnDownloading.listen(_errorOnDownloadingHandler);
-    _initializeSavedTickets();
+    _initialize();
     super.initWidgetModel();
   }
 
   //* Internal functions
-  Future<void> _initializeSavedTickets() async {
-    _ticketList.accept(await model.initializeSavedTickets());
+  Future<void> _initialize() async {
+    _isInitialization.accept(true);
+    _ticketList.accept(await model.initialize());
+    _isInitialization.accept(false);
   }
 
   void _ticketsDataChangedHandler(List<Ticket> newTicketList) {
@@ -84,6 +89,12 @@ class TicketStorageWM
 
   @override
   Future<void> onDeleteAllTap() async {
+    if (_ticketList.value!.isEmpty) {
+      MySnackBar.showWarning(
+        context,
+        message: TicketsStrings.ticketListIsEmpty,
+      );
+    }
     await model.deleteAllTickets();
   }
 
@@ -94,9 +105,20 @@ class TicketStorageWM
 
   @override
   Future<void> onDownloadAllTap() async {
-    await Future.wait(model.ticketList.map(
-      (ticket) => model.downloadTicket(ticket.url),
-    ));
+    if (_ticketList.value!.isEmpty) {
+      MySnackBar.showWarning(
+        context,
+        message: TicketsStrings.ticketListIsEmpty,
+      );
+      return;
+    }
+    if (_ticketList.value!.where((ticket) => ticket.canDownload).isEmpty) {
+      MySnackBar.showWarning(
+        context,
+        message: TicketsStrings.ticketListForDownloadingIsEmpty,
+      );
+    }
+    await model.downloadAllTickets();
   }
 
   //* ------------- GETTERS -------------
@@ -106,7 +128,7 @@ class TicketStorageWM
   TextStyle get headerStyle => Theme.of(context).textTheme.titleMedium!;
 
   @override
-  TextStyle get emptyTicketListStyle => Theme.of(context).textTheme.bodyMedium!;
+  TextStyle get bodyStyle => Theme.of(context).textTheme.bodyMedium!;
 
   @override
   TextStyle get ticketCardNameStyle => Theme.of(context).textTheme.bodyMedium!;
@@ -139,6 +161,9 @@ class TicketStorageWM
 
   //* States
   @override
+  StateNotifier<bool> get isInitialization => _isInitialization;
+
+  @override
   StateNotifier<List<Ticket>> get ticketList => _ticketList;
 }
 
@@ -152,7 +177,7 @@ abstract class ITicketStorageWM extends IWidgetModel {
 
   //* Ui styles
   TextStyle get headerStyle;
-  TextStyle get emptyTicketListStyle;
+  TextStyle get bodyStyle;
   TextStyle get ticketCardNameStyle;
   TextStyle get ticketProgressStyle;
   Color get addTicketButtonIconColor;
@@ -163,5 +188,6 @@ abstract class ITicketStorageWM extends IWidgetModel {
   BorderRadius get ticketCardBorderRadius;
 
   //* States
+  StateNotifier<bool> get isInitialization;
   StateNotifier<List<Ticket>> get ticketList;
 }
