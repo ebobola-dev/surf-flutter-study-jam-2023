@@ -19,18 +19,21 @@ mixin _$DownloadResult {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() successfullyDownloaded,
+    required TResult Function() canceledByUser,
     required TResult Function(String error) failedDownload,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? successfullyDownloaded,
+    TResult? Function()? canceledByUser,
     TResult? Function(String error)? failedDownload,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? successfullyDownloaded,
+    TResult Function()? canceledByUser,
     TResult Function(String error)? failedDownload,
     required TResult orElse(),
   }) =>
@@ -39,18 +42,21 @@ mixin _$DownloadResult {
   TResult map<TResult extends Object?>({
     required TResult Function(SuccessfullyDownloaded value)
         successfullyDownloaded,
+    required TResult Function(CanceledByUser value) canceledByUser,
     required TResult Function(FailedDownload value) failedDownload,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(SuccessfullyDownloaded value)? successfullyDownloaded,
+    TResult? Function(CanceledByUser value)? canceledByUser,
     TResult? Function(FailedDownload value)? failedDownload,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(SuccessfullyDownloaded value)? successfullyDownloaded,
+    TResult Function(CanceledByUser value)? canceledByUser,
     TResult Function(FailedDownload value)? failedDownload,
     required TResult orElse(),
   }) =>
@@ -114,6 +120,7 @@ class _$SuccessfullyDownloaded extends SuccessfullyDownloaded {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() successfullyDownloaded,
+    required TResult Function() canceledByUser,
     required TResult Function(String error) failedDownload,
   }) {
     return successfullyDownloaded();
@@ -123,6 +130,7 @@ class _$SuccessfullyDownloaded extends SuccessfullyDownloaded {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? successfullyDownloaded,
+    TResult? Function()? canceledByUser,
     TResult? Function(String error)? failedDownload,
   }) {
     return successfullyDownloaded?.call();
@@ -132,6 +140,7 @@ class _$SuccessfullyDownloaded extends SuccessfullyDownloaded {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? successfullyDownloaded,
+    TResult Function()? canceledByUser,
     TResult Function(String error)? failedDownload,
     required TResult orElse(),
   }) {
@@ -146,6 +155,7 @@ class _$SuccessfullyDownloaded extends SuccessfullyDownloaded {
   TResult map<TResult extends Object?>({
     required TResult Function(SuccessfullyDownloaded value)
         successfullyDownloaded,
+    required TResult Function(CanceledByUser value) canceledByUser,
     required TResult Function(FailedDownload value) failedDownload,
   }) {
     return successfullyDownloaded(this);
@@ -155,6 +165,7 @@ class _$SuccessfullyDownloaded extends SuccessfullyDownloaded {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(SuccessfullyDownloaded value)? successfullyDownloaded,
+    TResult? Function(CanceledByUser value)? canceledByUser,
     TResult? Function(FailedDownload value)? failedDownload,
   }) {
     return successfullyDownloaded?.call(this);
@@ -164,6 +175,7 @@ class _$SuccessfullyDownloaded extends SuccessfullyDownloaded {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(SuccessfullyDownloaded value)? successfullyDownloaded,
+    TResult Function(CanceledByUser value)? canceledByUser,
     TResult Function(FailedDownload value)? failedDownload,
     required TResult orElse(),
   }) {
@@ -177,6 +189,116 @@ class _$SuccessfullyDownloaded extends SuccessfullyDownloaded {
 abstract class SuccessfullyDownloaded extends DownloadResult {
   const factory SuccessfullyDownloaded() = _$SuccessfullyDownloaded;
   const SuccessfullyDownloaded._() : super._();
+}
+
+/// @nodoc
+abstract class _$$CanceledByUserCopyWith<$Res> {
+  factory _$$CanceledByUserCopyWith(
+          _$CanceledByUser value, $Res Function(_$CanceledByUser) then) =
+      __$$CanceledByUserCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$CanceledByUserCopyWithImpl<$Res>
+    extends _$DownloadResultCopyWithImpl<$Res, _$CanceledByUser>
+    implements _$$CanceledByUserCopyWith<$Res> {
+  __$$CanceledByUserCopyWithImpl(
+      _$CanceledByUser _value, $Res Function(_$CanceledByUser) _then)
+      : super(_value, _then);
+}
+
+/// @nodoc
+
+class _$CanceledByUser extends CanceledByUser {
+  const _$CanceledByUser() : super._();
+
+  @override
+  String toString() {
+    return 'DownloadResult.canceledByUser()';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$CanceledByUser);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() successfullyDownloaded,
+    required TResult Function() canceledByUser,
+    required TResult Function(String error) failedDownload,
+  }) {
+    return canceledByUser();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? successfullyDownloaded,
+    TResult? Function()? canceledByUser,
+    TResult? Function(String error)? failedDownload,
+  }) {
+    return canceledByUser?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? successfullyDownloaded,
+    TResult Function()? canceledByUser,
+    TResult Function(String error)? failedDownload,
+    required TResult orElse(),
+  }) {
+    if (canceledByUser != null) {
+      return canceledByUser();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(SuccessfullyDownloaded value)
+        successfullyDownloaded,
+    required TResult Function(CanceledByUser value) canceledByUser,
+    required TResult Function(FailedDownload value) failedDownload,
+  }) {
+    return canceledByUser(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(SuccessfullyDownloaded value)? successfullyDownloaded,
+    TResult? Function(CanceledByUser value)? canceledByUser,
+    TResult? Function(FailedDownload value)? failedDownload,
+  }) {
+    return canceledByUser?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(SuccessfullyDownloaded value)? successfullyDownloaded,
+    TResult Function(CanceledByUser value)? canceledByUser,
+    TResult Function(FailedDownload value)? failedDownload,
+    required TResult orElse(),
+  }) {
+    if (canceledByUser != null) {
+      return canceledByUser(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class CanceledByUser extends DownloadResult {
+  const factory CanceledByUser() = _$CanceledByUser;
+  const CanceledByUser._() : super._();
 }
 
 /// @nodoc
@@ -244,6 +366,7 @@ class _$FailedDownload extends FailedDownload {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() successfullyDownloaded,
+    required TResult Function() canceledByUser,
     required TResult Function(String error) failedDownload,
   }) {
     return failedDownload(error);
@@ -253,6 +376,7 @@ class _$FailedDownload extends FailedDownload {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? successfullyDownloaded,
+    TResult? Function()? canceledByUser,
     TResult? Function(String error)? failedDownload,
   }) {
     return failedDownload?.call(error);
@@ -262,6 +386,7 @@ class _$FailedDownload extends FailedDownload {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? successfullyDownloaded,
+    TResult Function()? canceledByUser,
     TResult Function(String error)? failedDownload,
     required TResult orElse(),
   }) {
@@ -276,6 +401,7 @@ class _$FailedDownload extends FailedDownload {
   TResult map<TResult extends Object?>({
     required TResult Function(SuccessfullyDownloaded value)
         successfullyDownloaded,
+    required TResult Function(CanceledByUser value) canceledByUser,
     required TResult Function(FailedDownload value) failedDownload,
   }) {
     return failedDownload(this);
@@ -285,6 +411,7 @@ class _$FailedDownload extends FailedDownload {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(SuccessfullyDownloaded value)? successfullyDownloaded,
+    TResult? Function(CanceledByUser value)? canceledByUser,
     TResult? Function(FailedDownload value)? failedDownload,
   }) {
     return failedDownload?.call(this);
@@ -294,6 +421,7 @@ class _$FailedDownload extends FailedDownload {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(SuccessfullyDownloaded value)? successfullyDownloaded,
+    TResult Function(CanceledByUser value)? canceledByUser,
     TResult Function(FailedDownload value)? failedDownload,
     required TResult orElse(),
   }) {

@@ -17,17 +17,25 @@ class Ticket with _$Ticket {
     @Default(0) int downloadedSize,
   }) = _Ticket;
 
-  String get name => FileUtil.getFilenameWithoutExt(url);
+  /// Имя файла такое же как в ссылке
   String get filename => UriUtil.getFilenameFromUri(url);
-  //- not used yet
+
+  /// Имя берется из ссылки без расширения
+  String get name => FileUtil.getFilenameWithoutExt(url);
+
+  /// Прогресс скачивания в процентах
   int get downloadingProgress => (downloadedSize / totalSize * 100).round();
-  //? Можем скачать билет, только если его скачивание ещё не начато, или оно завершилось ошибкой
-  bool get canDownload => [
-        DownloadingStatus.notStarted,
-        DownloadingStatus.hasError
-      ].contains(downloadingStatus);
+
+  /// Можем ли мы начать скачивание этого билета
+  bool get canDownload => downloadingStatus.canDownload;
+
+  /// Билет скачивается
   bool get isDownloading => downloadingStatus == DownloadingStatus.inProgress;
+
+  /// Билет скачан успешно
   bool get downloaded => downloadingStatus == DownloadingStatus.downloaded;
+
+  /// При скачивании билета произошла ошибка
   bool get hasDownloadingError =>
       downloadingStatus == DownloadingStatus.hasError;
 

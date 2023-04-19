@@ -6,8 +6,10 @@ ThemeData getThemeData(BuildContext context) => ThemeData.light().copyWith(
       primaryColor: primaryColor,
       secondaryHeaderColor: secondaryColor,
       scaffoldBackgroundColor: backgroundColor,
-      splashColor: primaryColor,
+      dividerColor: dividerColor,
+      splashColor: dividerColor.withOpacity(.32),
       iconTheme: const IconThemeData(color: iconColor),
+      highlightColor: Colors.transparent,
       colorScheme: const ColorScheme.light(
         background: backgroundColor,
         primary: primaryColor,

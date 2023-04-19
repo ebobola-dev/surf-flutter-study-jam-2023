@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:surf_flutter_study_jam_2023/assets/srtings/tickets.dart';
 import 'package:surf_flutter_study_jam_2023/config/animations.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/screens/ticker_storage/ticket_storage_wm.dart';
-import 'package:surf_flutter_study_jam_2023/features/ticket_storage/widgets/ticket_card.dart';
+import 'package:surf_flutter_study_jam_2023/features/ticket_storage/widgets/ticket_card/ticket_card.dart';
 import 'package:surf_flutter_study_jam_2023/utils/animated_switcher_transition.dart';
 
 class TicketList extends StatelessWidget {

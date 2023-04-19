@@ -1,22 +1,30 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:dio/dio.dart';
 import 'package:elementary/elementary.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/download_result/download_result.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/downloading_status/downloading_status.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/errors/added_ticket_error.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/ticket/ticket.dart';
 import 'package:collection/collection.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/repositories/ticket_repository.dart';
 import 'package:surf_flutter_study_jam_2023/utils/delays.dart';
-import 'package:surf_flutter_study_jam_2023/utils/file_util.dart';
 
 class TicketStorageModel extends ElementaryModel {
+  /// Ticket repository
   final ITicketRepository _ticketRepository;
+
+  /// Ticket list
   List<Ticket> _ticketList = [];
+
+  /// Cancel tokens for cancel downloading
+  Map<String, CancelToken> _cancelTokens = {};
+
+  /// Stream to notify the UI about changes in tickets
   final StreamController<List<Ticket>> _ticketDataChanged =
       StreamController.broadcast();
+
+  /// Stream to notify the UI about donwloading errors
   final StreamController<String> _errorsOnDownloading =
       StreamController.broadcast();
 
@@ -24,7 +32,7 @@ class TicketStorageModel extends ElementaryModel {
     required ITicketRepository ticketRepository,
   }) : _ticketRepository = ticketRepository;
 
-  //* --------- GETTERS ----------------
+  ///* --------- GETTERS ----------------
 
   Stream<List<Ticket>> get ticketDataChanged => _ticketDataChanged.stream;
   Stream<String> get errorsOnDownloading => _errorsOnDownloading.stream;
@@ -32,29 +40,32 @@ class TicketStorageModel extends ElementaryModel {
   //? Всегда отдаём новый (скопированный) лист, чтобы список в модели и список в виджет-модели не ссылались на одно и то же
   List<Ticket> get ticketList => List.from(_ticketList);
 
-  //* ----------------------------------
+  ///* ----------------------------------
 
-  //* -------- Inherit Functions -------
+  ///* -------- Internal Functions -------
 
   int getTicketIndex(String ticketUrl) {
     return _ticketList.indexWhere((ticket) => ticket.url == ticketUrl);
   }
 
-  //? После инициализации все изменения данных какого-то билета происходят только через эту функцию
-  //? Потому что индекс каждого билета может изменится в любой момент (при удалении каких-то билетов)
-  //? Для каждого изменения нам нужно получать корректный индекс билета в списке
-  Ticket _changeTicketAndNotify(
+  ///? После инициализации все изменения данных какого-то билета происходят только через эту функцию
+  ///? Потому что индекс каждого билета может изменится в любой момент (при удалении каких-то билетов)
+  ///? Для каждого изменения нам нужно получать корректный индекс билета в списке
+  Future<Ticket> _changeTicketAndNotify(
     Ticket newTicketData, {
     bool updateInDatabase = false,
-  }) {
+  }) async {
     final ticketIndex = getTicketIndex(newTicketData.url);
-    //? Меняем данные в списке модели
+
+    ///? Меняем данные в списке модели
     _ticketList[ticketIndex] = newTicketData;
-    //? Уведомляем ui
+
+    ///? Уведомляем ui
     _ticketDataChanged.add(List.from(_ticketList));
-    //? Обновляем данные в БД
+
+    ///? Обновляем данные в БД
     if (updateInDatabase) {
-      _ticketRepository.updateTicket(newTicketData);
+      await _ticketRepository.updateTicket(newTicketData);
     }
     return newTicketData;
   }
@@ -62,8 +73,6 @@ class TicketStorageModel extends ElementaryModel {
   //* ----------------------------------
 
   Future<List<Ticket>> initialize() async {
-    final ticketsFolder = await getTemporaryDirectory();
-
     //? Создаём папку для билетов, если её ещё нет
     await _ticketRepository.createTicketsDirIfNotExists();
 
@@ -71,11 +80,24 @@ class TicketStorageModel extends ElementaryModel {
     var savedTickets = await _ticketRepository.getTicketsFromDatabase();
     for (var i = 0; i < savedTickets.length; i++) {
       final ticket = savedTickets[i];
-      // **********************
-      //? Если в базе данных есть недокачанные билеты, обнулить их скачивание,
-      //? Потому что докачать билеты после открытия (перезапуска) приложения мы не можем
-      //? По крайней мере, я не могу)
+
+      /// **********************
+      ///? Если в базе данных есть недокачанные билеты, обнулить их скачивание,
+      ///? Потому что докачать билеты после открытия (перезапуска) приложения мы не можем
+      ///? По крайней мере, я не могу)
       if (ticket.isDownloading) {
+        log(
+          '',
+          error:
+              'Found ticket with incomplete download "${ticket.name}", its download progress will be reset',
+          name: 'Ticket Storage Model | initialize',
+        );
+        log(
+          '',
+          error:
+              'Found ticket with incomplete download "${ticket.name}", its download progress will be reset',
+          name: 'Ticket Storage Model | initialize',
+        );
         savedTickets[i] = ticket.copyWith(
           downloadingStatus: DownloadingStatus.notStarted,
           downloadedSize: 0,
@@ -83,40 +105,58 @@ class TicketStorageModel extends ElementaryModel {
         //? Удаляем файл билета
         _ticketRepository.deleteTicketFile(ticket);
       }
-      // **********************
-      // **********************
-      //? Если в базе данных есть билеты, которых нет на устройстве (их могут удалить и тп)
-      //? То говорим что они не скачаны
+
+      /// **********************
+      /// **********************
+      ///? Если в базе данных есть билеты, которых нет на устройстве (их могут удалить и тп)
+      ///? То говорим что они не скачаны
       if (ticket.downloaded &&
-          !(await FileUtil.fileIsExists(
-            "${ticketsFolder.path}/${ticket.filename}",
-          ))) {
+          !(await _ticketRepository.ticketFileIsExists(ticket))) {
+        log(
+          '',
+          error:
+              'Downloaded ticket was found, but its file was not found "${ticket.name}", its download progress will be reset',
+          name: 'Ticket Storage Model | initialize',
+        );
         savedTickets[i] = ticket.copyWith(
           downloadingStatus: DownloadingStatus.notStarted,
           downloadedSize: 0,
         );
-        //? Удаляем файл билета
+
+        ///? Удаляем файл билета
         _ticketRepository.deleteTicketFile(ticket);
       }
-      // **********************
+
+      /// **********************
     }
     _ticketList = savedTickets;
+    _cancelTokens = Map.fromIterable(
+      savedTickets,
+      key: (ticket) => ticket.url,
+      value: (_) => CancelToken(),
+    );
 
-    //? Фейковая задержка для отладки отображения чтения из бд
+    ///? Фейковая задержка для отладки отображения чтения из бд
     await DelayUtil.fakeDelay();
     return List.from(savedTickets);
   }
 
   List<Ticket> addTicket(String url) {
-    //? Добавляем билет, только если его ещё нет в списке
+    ///? Добавляем билет, только если его ещё нет в списке
     final ticketInList =
         _ticketList.firstWhereOrNull((ticket) => ticket.url == url);
     if (ticketInList != null) {
       throw AddedTicketError(tikcetName: ticketInList.name);
     }
     final newTicket = Ticket(url: url);
+
+    ///? Добавляем билет в список модели
     _ticketList.add(newTicket);
-    //? Добавляем билет в БД
+
+    ///? Добавляем дио токен в модель
+    _cancelTokens[url] = CancelToken();
+
+    ///? Добавляем билет в БД
     _ticketRepository.saveTicket(newTicket);
     return List.from(_ticketList);
   }
@@ -128,9 +168,9 @@ class TicketStorageModel extends ElementaryModel {
     );
     final ticketIndex = getTicketIndex(url);
     if (ticketIndex == -1) {
-      //? На всякий случай проверяем
-      //? Если вдруг билет отображается в ui, но его нет в списке модели
-      //? Такого быть не должно, но может быть всё xD
+      ///? На всякий случай проверяем
+      ///? Если вдруг билет отображается в ui, но его нет в списке модели
+      ///? Такого быть не должно, но может быть всё xD
       log(
         'Error: ticket not found in ticketList',
         name: 'TicketStorageModel | downloadTicket',
@@ -140,29 +180,21 @@ class TicketStorageModel extends ElementaryModel {
       return;
     }
     var ticket = _ticketList[ticketIndex];
-    final ticketFilepath =
-        "${await _ticketRepository.ticketsDirPath}/${ticket.filename}";
-    if (await FileUtil.fileIsExists(ticketFilepath)) {
-      log(
-        'Warning: File "${ticket.filename}" is already exists, it will be overwritten',
-        name: 'TicketStorageModel | downloadTicket',
-      );
-    }
 
-    //? Ставим билету DownloadingStatus -> inProgress
-    ticket = _changeTicketAndNotify(
+    ///? Ставим билету DownloadingStatus -> inProgress
+    ticket = await _changeTicketAndNotify(
       ticket.copyWith(downloadingStatus: DownloadingStatus.inProgress),
       updateInDatabase: true,
     );
 
-    //? Скачиваем файл
-    final downloadResult = await _ticketRepository.downloadFile(
+    ///? Скачиваем файл
+    final downloadResult = await _ticketRepository.downloadTicketFile(
       ticket: ticket,
-      savePath: ticketFilepath,
-      onReceiveProgress: (received, total) {
+      cancelToken: _cancelTokens[url],
+      onReceiveProgress: (received, total) async {
         if (total != -1) {
-          //? Обновляем downloadingProgress у билета
-          ticket = _changeTicketAndNotify(ticket.copyWith(
+          ///? Обновляем downloadingProgress у билета
+          ticket = await _changeTicketAndNotify(ticket.copyWith(
             downloadedSize: received,
             totalSize: total,
           ));
@@ -175,27 +207,58 @@ class TicketStorageModel extends ElementaryModel {
       },
     );
 
-    if (downloadResult is FailedDownload) {
-      //? Ставим билету DownloadingStatus -> hasError
-      ticket = _changeTicketAndNotify(
-        ticket.copyWith(downloadingStatus: DownloadingStatus.hasError),
-        updateInDatabase: true,
-      );
-      //? Сообщаем ui об ошибке
-      _errorsOnDownloading.add(downloadResult.error);
-      //? Удаляем файл билета
-      _ticketRepository.deleteTicketFile(ticket);
-    } else {
-      //? Ставим билету DownloadingStatus -> downloaded, и на всякий случай downloadedSize = totalSize
-      //? Потому что иногда downloadedSize бывает больше чем тотал
-      ticket = _changeTicketAndNotify(
-        ticket.copyWith(
-          downloadingStatus: DownloadingStatus.downloaded,
-          downloadedSize: ticket.totalSize,
-        ),
-        updateInDatabase: true,
-      );
-    }
+    downloadResult.when(
+      successfullyDownloaded: () async {
+        ///? Ставим билету DownloadingStatus -> downloaded, и на всякий случай downloadedSize = totalSize
+        ///? Потому что иногда downloadedSize бывает больше чем тотал
+        ticket = await _changeTicketAndNotify(
+          ticket.copyWith(
+            downloadingStatus: DownloadingStatus.downloaded,
+            downloadedSize: ticket.totalSize,
+          ),
+          updateInDatabase: true,
+        );
+      },
+      canceledByUser: () async {
+        ///? Сбрасываем прогресс скачивание в данных билета
+        final ticket = _ticketList[getTicketIndex(url)];
+        await _changeTicketAndNotify(
+          ticket.copyWith(
+            downloadedSize: 0,
+            downloadingStatus: DownloadingStatus.notStarted,
+          ),
+          updateInDatabase: true,
+        );
+
+        ///? Удаляем недокачанный файл билета, если он там конечно есть
+        _ticketRepository.deleteTicketFile(ticket);
+
+        ///? Пересоздаём токен, ибо нельзя скачать файл с отменненым токеном
+        _cancelTokens[url] = CancelToken();
+      },
+      failedDownload: (String error) async {
+        ///? Ставим билету DownloadingStatus -> hasError
+        ticket = await _changeTicketAndNotify(
+          ticket.copyWith(downloadingStatus: DownloadingStatus.hasError),
+          updateInDatabase: true,
+        );
+
+        ///? Сообщаем ui об ошибке
+        _errorsOnDownloading.add(error);
+
+        ///? Удаляем файл билета
+        _ticketRepository.deleteTicketFile(ticket);
+      },
+    );
+  }
+
+  Future<void> cancelDownloading(String ticketUrl) async {
+    ///? Защита от дурака(меня)
+    ///? Если для этого билета нет токена, то ничего не делаем
+    if (_cancelTokens[ticketUrl] == null) return;
+
+    ///? Отменяем скачивание
+    _cancelTokens[ticketUrl]!.cancel();
   }
 
   Future<void> downloadAllTickets() async {
@@ -212,11 +275,13 @@ class TicketStorageModel extends ElementaryModel {
   }
 
   Future<void> deleteAllTickets() async {
-    //? Удаляем в тикеты в бд и файлы на устройстве
+    ///? Удаляем в тикеты в бд и файлы на устройстве
     await _ticketRepository.deleteAllTickets();
-    //? Отчищаем в модели
+
+    ///? Отчищаем в модели
     _ticketList.clear();
-    //? Кидаем в виджет модель
+
+    ///? Кидаем в виджет модель
     _ticketDataChanged.add(List.from(_ticketList));
   }
 }

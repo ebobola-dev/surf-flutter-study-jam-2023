@@ -1,9 +1,12 @@
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:surf_flutter_study_jam_2023/assets/srtings/tickets.dart';
 import 'package:surf_flutter_study_jam_2023/assets/themes/paddings.dart';
+import 'package:surf_flutter_study_jam_2023/config/icons_paths.dart';
 import 'package:surf_flutter_study_jam_2023/features/common/widgets/my_snackbar.dart';
+import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/downloading_status/downloading_status.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/errors/added_ticket_error.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/ticket/ticket.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/repositories/ticket_repository.dart';
@@ -26,11 +29,13 @@ class TicketStorageWM
 
   late final StateNotifier<List<Ticket>> _ticketList;
   late final StateNotifier<bool> _isInitialization;
+  late final StateNotifier<String?> _activeTicketCard;
 
   @override
   void initWidgetModel() {
     _ticketList = StateNotifier(initValue: model.ticketList);
     _isInitialization = StateNotifier(initValue: false);
+    _activeTicketCard = StateNotifier();
     model.ticketDataChanged.listen(_ticketsDataChangedHandler);
     model.errorsOnDownloading.listen(_errorOnDownloadingHandler);
     _initialize();
@@ -51,6 +56,15 @@ class TicketStorageWM
   void _errorOnDownloadingHandler(String error) {
     MySnackBar.showError(context, error: error);
   }
+
+  Widget _createIcon(String path, Color color) => SvgPicture.asset(
+        path,
+        key: ValueKey(path),
+        colorFilter: ColorFilter.mode(
+          color,
+          BlendMode.srcIn,
+        ),
+      );
 
   //* Ui functions
   @override
@@ -99,8 +113,14 @@ class TicketStorageWM
   }
 
   @override
-  Future<void> onDownloadTicketTap(String ticketUrl) async {
-    await model.downloadTicket(ticketUrl);
+  Future<void> onTicketDownloadIconTap(Ticket ticket) async {
+    if (ticket.isDownloading) {
+      await model.cancelDownloading(ticket.url);
+      return;
+    }
+    if (ticket.canDownload) {
+      await model.downloadTicket(ticket.url);
+    }
   }
 
   @override
@@ -119,6 +139,15 @@ class TicketStorageWM
       );
     }
     await model.downloadAllTickets();
+  }
+
+  @override
+  void onTicketCardTap(String ticketUrl) async {
+    if (_activeTicketCard.value == ticketUrl) {
+      _activeTicketCard.accept(null);
+      return;
+    }
+    _activeTicketCard.accept(ticketUrl);
   }
 
   //* ------------- GETTERS -------------
@@ -140,24 +169,53 @@ class TicketStorageWM
           );
 
   @override
-  Color get addTicketButtonIconColor =>
-      Theme.of(context).colorScheme.background;
+  TextStyle get ticketMenuButtonStyle =>
+      Theme.of(context).textTheme.bodySmall!.copyWith(
+            color: Theme.of(context).primaryColor,
+          );
+
+  @override
+  Color get primaryColor => Theme.of(context).colorScheme.primary;
+
+  @override
+  Color get disabledColor => Theme.of(context).dividerColor;
 
   @override
   Color get iconColor => Theme.of(context).colorScheme.secondary;
 
   @override
-  Color get ticketCardDownloadingIconColor => Colors.blue;
+  Color get addTicketButtonIconColor =>
+      Theme.of(context).colorScheme.background;
 
   @override
-  Color get ticketCardDownloadedIconColor => Colors.green;
-
-  @override
-  double get ticketCardWidth =>
-      getScreenSize(context).width - defaultPadding * 2 - 8.0;
+  double get maxProgressWidth =>
+      getScreenSize(context).width - defaultPadding * 2 - 8.0 - 12.0 * 2;
 
   @override
   BorderRadius get ticketCardBorderRadius => BorderRadius.circular(7.5);
+
+  @override
+  BorderRadius get ticketMenuButtonBorderRadius => BorderRadius.circular(7.5);
+
+  @override
+  Map<DownloadingStatus, Widget> get ticketDownloadingIcons => {
+        DownloadingStatus.notStarted: _createIcon(
+          IconPaths.download,
+          iconColor,
+        ),
+        DownloadingStatus.inProgress: _createIcon(
+          IconPaths.crossCircle,
+          Colors.red,
+        ),
+        DownloadingStatus.downloaded: _createIcon(
+          IconPaths.downloaded,
+          Colors.green,
+        ),
+        DownloadingStatus.hasError: _createIcon(
+          IconPaths.download,
+          iconColor,
+        ),
+      };
 
   //* States
   @override
@@ -165,29 +223,37 @@ class TicketStorageWM
 
   @override
   StateNotifier<List<Ticket>> get ticketList => _ticketList;
+
+  @override
+  StateNotifier<String?> get activeTicketCard => _activeTicketCard;
 }
 
 abstract class ITicketStorageWM extends IWidgetModel {
   //* Functions
   String getSizeAsString(int bytes);
   Future<void> onAddTicketTap();
-  Future<void> onDownloadTicketTap(String ticketUrl);
   Future<void> onDownloadAllTap();
   Future<void> onDeleteAllTap();
+  Future<void> onTicketDownloadIconTap(Ticket ticket);
+  void onTicketCardTap(String ticketUrl);
 
   //* Ui styles
   TextStyle get headerStyle;
   TextStyle get bodyStyle;
   TextStyle get ticketCardNameStyle;
   TextStyle get ticketProgressStyle;
-  Color get addTicketButtonIconColor;
+  TextStyle get ticketMenuButtonStyle;
   Color get iconColor;
-  Color get ticketCardDownloadingIconColor;
-  Color get ticketCardDownloadedIconColor;
-  double get ticketCardWidth;
+  Color get disabledColor;
+  Color get primaryColor;
+  Color get addTicketButtonIconColor;
+  double get maxProgressWidth;
   BorderRadius get ticketCardBorderRadius;
+  BorderRadius get ticketMenuButtonBorderRadius;
+  Map<DownloadingStatus, Widget> get ticketDownloadingIcons;
 
   //* States
   StateNotifier<bool> get isInitialization;
   StateNotifier<List<Ticket>> get ticketList;
+  StateNotifier<String?> get activeTicketCard;
 }

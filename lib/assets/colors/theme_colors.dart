@@ -6,7 +6,7 @@ const secondaryColor = Color(0xFF0A0B2F);
 const textColor = secondaryColor;
 const greyTextColor = Color(0xFFB8B8B8);
 const iconColor = primaryColor;
-const dividerColor = Color(0xFFD9D9D9);
+const dividerColor = Color(0xFFA9A9A9);
 const textFieldFillColor = Color(0xFFF1F1FE);
 
 const errorSnackBarColor = Color(0xFFDB1B16);
