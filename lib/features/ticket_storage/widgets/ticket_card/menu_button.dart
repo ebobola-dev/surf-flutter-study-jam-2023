@@ -6,7 +6,7 @@ class TicketMenuButton extends StatelessWidget {
   final bool show;
   final String iconPath;
   final String text;
-  final VoidCallback? onTap;
+  final VoidCallback onTap;
   final TextStyle textStyle;
   final Color color;
   final Color disabledColor;
@@ -20,7 +20,7 @@ class TicketMenuButton extends StatelessWidget {
     required this.color,
     required this.disabledColor,
     required this.textStyle,
-    this.onTap,
+    required this.onTap,
     this.borderRadius,
     this.rightMargin = 0.0,
   });
@@ -37,13 +37,8 @@ class TicketMenuButton extends StatelessWidget {
           color: Colors.transparent,
           borderRadius: borderRadius,
           child: InkWell(
-            onTap: () {
-              if (onTap != null) {
-                onTap!();
-              }
-            },
+            onTap: onTap,
             borderRadius: borderRadius,
-            splashColor: onTap == null ? Colors.transparent : null,
             child: Container(
               width: 80.0,
               padding: const EdgeInsets.symmetric(
@@ -61,16 +56,14 @@ class TicketMenuButton extends StatelessWidget {
                     iconPath,
                     width: 20.0,
                     colorFilter: ColorFilter.mode(
-                      onTap == null ? disabledColor : color,
+                      color,
                       BlendMode.srcIn,
                     ),
                   ),
                   const SizedBox(height: 12.0),
                   Text(
                     text,
-                    style: textStyle.copyWith(
-                      color: onTap == null ? disabledColor : null,
-                    ),
+                    style: textStyle,
                     textAlign: TextAlign.center,
                   ),
                 ],

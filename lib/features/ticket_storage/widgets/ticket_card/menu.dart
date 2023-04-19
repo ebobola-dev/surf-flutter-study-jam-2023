@@ -46,7 +46,7 @@ class TicketMenu extends StatelessWidget {
                       color: ticketStorageWM.primaryColor,
                       disabledColor: ticketStorageWM.disabledColor,
                       rightMargin: 3.0,
-                      onTap: null,
+                      onTap: () => ticketStorageWM.onOpenTicketTap(ticket),
                     ),
                     TicketMenuButton(
                       show: ticket.downloaded,
@@ -58,7 +58,8 @@ class TicketMenu extends StatelessWidget {
                       color: ticketStorageWM.primaryColor,
                       disabledColor: ticketStorageWM.disabledColor,
                       rightMargin: 3.0,
-                      onTap: () {},
+                      onTap: () =>
+                          ticketStorageWM.onRedownloadTicketTap(ticket),
                     ),
                     TicketMenuButton(
                       iconPath: IconPaths.delete,
@@ -69,7 +70,7 @@ class TicketMenu extends StatelessWidget {
                       color: ticketStorageWM.primaryColor,
                       disabledColor: ticketStorageWM.disabledColor,
                       rightMargin: 3.0,
-                      onTap: () {},
+                      onTap: () => ticketStorageWM.onDeleteTicketTap(ticket),
                     ),
                     TicketMenuButton(
                       iconPath: IconPaths.info,
@@ -79,7 +80,7 @@ class TicketMenu extends StatelessWidget {
                           ticketStorageWM.ticketMenuButtonBorderRadius,
                       color: ticketStorageWM.primaryColor,
                       disabledColor: ticketStorageWM.disabledColor,
-                      onTap: () {},
+                      onTap: () => ticketStorageWM.onInfoTicketTap(ticket),
                     ),
                   ],
                 ),

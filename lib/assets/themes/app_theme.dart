@@ -96,6 +96,7 @@ ThemeData getThemeData(BuildContext context) => ThemeData.light().copyWith(
       dialogBackgroundColor: backgroundColor,
       dialogTheme: const DialogTheme(
         alignment: Alignment.center,
+        actionsPadding: EdgeInsets.zero,
         elevation: 5,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(7.5)),

@@ -6,7 +6,7 @@ class Config {
   static const fakeDelay = true;
 
   /// Use fake delay in release mode
-  static const fakeDelayInReleaseMode = true;
+  static const fakeDelayInReleaseMode = false;
 
   /// Fake delay seconds value
   static const fakeDelaySeconds = 5;

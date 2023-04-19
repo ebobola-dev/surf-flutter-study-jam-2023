@@ -6,7 +6,7 @@ import 'package:surf_flutter_study_jam_2023/config/config.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/download_result/download_result.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/ticket/ticket.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/services/database.dart';
-import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/services/download.dart';
+import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/services/dio_client.dart';
 import 'package:surf_flutter_study_jam_2023/utils/file_util.dart';
 
 abstract class ITicketRepository {
@@ -19,6 +19,7 @@ abstract class ITicketRepository {
   Future<void> deleteTicket(Ticket ticket);
   Future<void> deleteAllTickets();
   Future<void> deleteTicketFile(Ticket ticket);
+  Future<int?> getTicketSizeByUrl(String ticketUrl);
   Future<DownloadResult> downloadTicketFile({
     required Ticket ticket,
     CancelToken? cancelToken,
@@ -27,8 +28,8 @@ abstract class ITicketRepository {
 }
 
 class TicketRepository implements ITicketRepository {
-  final DownloadService _downloadService;
-  TicketRepository(this._downloadService);
+  final DioClient _dioClient;
+  TicketRepository(this._dioClient);
 
   @override
   Future<String> get ticketsDirPath async {
@@ -56,7 +57,7 @@ class TicketRepository implements ITicketRepository {
         name: 'TicketStorageModel | downloadTicket',
       );
     }
-    final downloadResult = await _downloadService.downloadFile(
+    final downloadResult = await _dioClient.downloadFile(
       url: ticket.url,
       savePath: ticketFullFilepath,
       cancelToken: cancelToken,
@@ -69,6 +70,11 @@ class TicketRepository implements ITicketRepository {
       );
     }
     return downloadResult;
+  }
+
+  @override
+  Future<int?> getTicketSizeByUrl(String ticketUrl) async {
+    return await _dioClient.getFileSize(ticketUrl);
   }
 
   @override

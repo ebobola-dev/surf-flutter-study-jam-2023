@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -9,17 +11,21 @@ import 'package:surf_flutter_study_jam_2023/features/common/widgets/my_snackbar.
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/downloading_status/downloading_status.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/errors/added_ticket_error.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/ticket/ticket.dart';
+import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/ticket_deleting_options/ticket_deleting_options.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/repositories/ticket_repository.dart';
-import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/services/download.dart';
+import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/services/dio_client.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/screens/ticker_storage/ticket_storage_model.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/screens/ticker_storage/ticket_storage_screen.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/widgets/add_ticket_dialog.dart';
+import 'package:surf_flutter_study_jam_2023/features/ticket_storage/widgets/delete_ticket_dialog.dart';
+import 'package:surf_flutter_study_jam_2023/features/ticket_storage/widgets/redownload_ticket_dialog.dart';
+import 'package:surf_flutter_study_jam_2023/features/ticket_storage/widgets/ticket_info_dialog.dart';
 import 'package:surf_flutter_study_jam_2023/utils/file_util.dart';
 import 'package:surf_flutter_study_jam_2023/utils/screen_sizes.dart';
 
 TicketStorageWM createTicketStorageWM(BuildContext context) =>
     TicketStorageWM(TicketStorageModel(
-      ticketRepository: TicketRepository(context.read<DownloadService>()),
+      ticketRepository: TicketRepository(context.read<DioClient>()),
     ));
 
 class TicketStorageWM
@@ -42,7 +48,7 @@ class TicketStorageWM
     super.initWidgetModel();
   }
 
-  //* Internal functions
+  ///* Internal functions
   Future<void> _initialize() async {
     _isInitialization.accept(true);
     _ticketList.accept(await model.initialize());
@@ -66,7 +72,7 @@ class TicketStorageWM
         ),
       );
 
-  //* Ui functions
+  ///* Ui functions
   @override
   String getSizeAsString(
     int bytes, {
@@ -79,13 +85,15 @@ class TicketStorageWM
 
   @override
   Future<void> onAddTicketTap() async {
+    ///? Не можем добавлять билет, пока инициализируемся
+    if (isInitialization.value!) return;
     final newTicketUrl = await showDialog<String>(
       context: context,
       builder: (context) => const AddTicketDialog(),
     );
     if (newTicketUrl == null) return;
     try {
-      final newTicketList = model.addTicket(newTicketUrl);
+      final newTicketList = await model.addTicket(newTicketUrl);
       _ticketList.accept(newTicketList);
       // ignore: use_build_context_synchronously
       MySnackBar.showSuccess(
@@ -148,6 +156,72 @@ class TicketStorageWM
       return;
     }
     _activeTicketCard.accept(ticketUrl);
+  }
+
+  @override
+  Future<void> onOpenTicketTap(ticket) async {
+    //TODO
+    log(
+      '',
+      error: 'Ticket viewing not implemented',
+      name: 'Ticket Storage WM | onOpenTicketTap',
+    );
+  }
+
+  @override
+  Future<void> onRedownloadTicketTap(ticket) async {
+    final redonwload = await showDialog<bool>(
+      context: context,
+      builder: (context) => RedownloadTicketDialog(
+        ticketName: ticket.name,
+      ),
+    );
+    if (redonwload == null) return;
+    if (redonwload) {
+      model.redownloadTicketFile(ticket);
+      MySnackBar.showSuccess(
+        context,
+        message: 'Файл билета "${ticket.name}" удалён, он будет скачан заново',
+      );
+    }
+  }
+
+  @override
+  Future<void> onDeleteTicketTap(ticket) async {
+    final deleteOption = await showDialog<TicketDeletingOptions>(
+      context: context,
+      builder: (context) => DeleteTicketDialog(
+        ticketName: ticket.name,
+        ticketDownloaded: ticket.downloaded,
+      ),
+    );
+    switch (deleteOption) {
+      case TicketDeletingOptions.deleteTicket:
+        await model.deleteTicket(ticket);
+        return await MySnackBar.showSuccess(
+          context,
+          message: 'Билет "${ticket.name}" удалён',
+        );
+      case TicketDeletingOptions.deleteTicketFile:
+        await model.deleteTicketFile(ticket);
+        return await MySnackBar.showSuccess(
+          context,
+          message: 'Файл билета "${ticket.name}" удалён',
+        );
+      default:
+        return;
+    }
+  }
+
+  @override
+  Future<void> onInfoTicketTap(ticket) async {
+    showDialog(
+      context: context,
+      builder: (context) => TicketInfoDialog(
+        ticketUrl: ticket.url,
+        ticketStorageWM: this,
+      ),
+    );
   }
 
   //* ------------- GETTERS -------------
@@ -215,6 +289,10 @@ class TicketStorageWM
           IconPaths.download,
           iconColor,
         ),
+        DownloadingStatus.canceledByUser: _createIcon(
+          IconPaths.download,
+          iconColor,
+        ),
       };
 
   //* States
@@ -236,6 +314,10 @@ abstract class ITicketStorageWM extends IWidgetModel {
   Future<void> onDeleteAllTap();
   Future<void> onTicketDownloadIconTap(Ticket ticket);
   void onTicketCardTap(String ticketUrl);
+  Future<void> onOpenTicketTap(ticket);
+  Future<void> onRedownloadTicketTap(ticket);
+  Future<void> onDeleteTicketTap(ticket);
+  Future<void> onInfoTicketTap(ticket);
 
   //* Ui styles
   TextStyle get headerStyle;

@@ -10,10 +10,12 @@ import 'dart:math' as math;
 class TicketDownloadingProgress extends StatelessWidget {
   final Ticket ticket;
   final ITicketStorageWM ticketStorageWM;
+  final double? maxLineWidth;
   const TicketDownloadingProgress({
     super.key,
     required this.ticket,
     required this.ticketStorageWM,
+    this.maxLineWidth,
   });
 
   @override
@@ -25,7 +27,8 @@ class TicketDownloadingProgress extends StatelessWidget {
       child: Builder(
         builder: (context) {
           if (ticket.downloaded ||
-              ticket.downloadingStatus == DownloadingStatus.notStarted) {
+              ticket.downloadingStatus == DownloadingStatus.notStarted ||
+              ticket.downloadingStatus == DownloadingStatus.canceledByUser) {
             return SizedBox();
           }
           if (ticket.hasDownloadingError)
@@ -44,7 +47,7 @@ class TicketDownloadingProgress extends StatelessWidget {
               ),
               const SizedBox(height: 6.0),
               Container(
-                width: ticketStorageWM.maxProgressWidth,
+                width: maxLineWidth ?? ticketStorageWM.maxProgressWidth,
                 height: 5.0,
                 decoration: BoxDecoration(
                   color: ticketStorageWM.disabledColor.withOpacity(.32),
@@ -53,7 +56,7 @@ class TicketDownloadingProgress extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: AnimatedContainer(
                   duration: Animations.fastSpeed,
-                  width: ticketStorageWM.maxProgressWidth *
+                  width: (maxLineWidth ?? ticketStorageWM.maxProgressWidth) *
                       math.min(ticket.downloadingProgress * 0.01, 1.0),
                   height: 5.0,
                   decoration: BoxDecoration(

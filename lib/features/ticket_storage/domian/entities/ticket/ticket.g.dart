@@ -27,5 +27,6 @@ const _$DownloadingStatusEnumMap = {
   DownloadingStatus.notStarted: 'not_started',
   DownloadingStatus.inProgress: 'in_progress',
   DownloadingStatus.downloaded: 'downloaded',
+  DownloadingStatus.canceledByUser: 'canceled_by_user',
   DownloadingStatus.hasError: 'has_error',
 };

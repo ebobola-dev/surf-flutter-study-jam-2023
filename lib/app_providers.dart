@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dio/dio.dart';
-import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/services/download.dart';
+import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/services/dio_client.dart';
 
 class AppProviders extends StatelessWidget {
   final Widget child;
@@ -15,7 +15,7 @@ class AppProviders extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider(create: (context) => Dio()),
-        Provider(create: (context) => DownloadService(context.read<Dio>())),
+        Provider(create: (context) => DioClient(context.read<Dio>())),
       ],
       child: child,
     );
