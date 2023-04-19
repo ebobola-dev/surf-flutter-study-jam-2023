@@ -4,7 +4,8 @@ class DatabaseConfig {
           url TEXT PRIMARY KEY,
           downloadingStatus TEXT,
           totalSize INTEGER,
-          downloadedSize INTEGER
+          downloadedSize INTEGER,
+          savedFileFullPath TEXT
           )
           ''';
 }

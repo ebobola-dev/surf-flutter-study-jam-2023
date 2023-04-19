@@ -9,6 +9,7 @@ import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entit
 import 'package:collection/collection.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/repositories/ticket_repository.dart';
 import 'package:surf_flutter_study_jam_2023/utils/delays.dart';
+import 'package:surf_flutter_study_jam_2023/utils/uri_util.dart';
 
 class TicketStorageModel extends ElementaryModel {
   /// Ticket repository
@@ -79,49 +80,54 @@ class TicketStorageModel extends ElementaryModel {
     //? Читаем билеты из бд
     var savedTickets = await _ticketRepository.getTicketsFromDatabase();
     for (var i = 0; i < savedTickets.length; i++) {
-      final ticket = savedTickets[i];
+      var ticket = savedTickets[i];
 
       ///? Если в базе данных есть недокачанные билеты, обнулить их скачивание,
       ///? Потому что докачать билеты после открытия (перезапуска) приложения мы не можем
       ///? По крайней мере, я не могу)
       if (ticket.isDownloading) {
-        log(
-          '',
-          error:
-              'Found ticket with incomplete download "${ticket.name}", its download progress will be reset',
-          name: 'Ticket Storage Model | initialize',
-        );
-        log(
-          '',
-          error:
-              'Found ticket with incomplete download "${ticket.name}", its download progress will be reset',
-          name: 'Ticket Storage Model | initialize',
-        );
-        savedTickets[i] = ticket.copyWith(
+        ///? Сбрасываем прогресс загрузки
+        ticket = ticket.copyWith(
           downloadingStatus: DownloadingStatus.notStarted,
           downloadedSize: 0,
         );
-        //? Удаляем файл билета
+        log(
+          '',
+          error:
+              'Found ticket with incomplete download "${ticket.name}", its download progress will be reset',
+          name: 'Ticket Storage Model | initialize',
+        );
+        savedTickets[i] = ticket;
+
+        ///? Удаляем файл билета
         _ticketRepository.deleteTicketFile(ticket);
+
+        ///? Обновляем в бд
+        _ticketRepository.updateTicket(ticket);
       }
 
       ///? Если в базе данных есть билеты, которых нет на устройстве (их могут удалить и тп)
       ///? То говорим что они не скачаны
       if (ticket.downloaded &&
           !(await _ticketRepository.ticketFileIsExists(ticket))) {
+        ///? Сбрасываем прогресс загрузки
+        ticket = ticket.copyWith(
+          downloadingStatus: DownloadingStatus.notStarted,
+          downloadedSize: 0,
+        );
         log(
           '',
           error:
               'Downloaded ticket was found, but its file was not found "${ticket.name}", its download progress will be reset',
           name: 'Ticket Storage Model | initialize',
         );
-        savedTickets[i] = ticket.copyWith(
-          downloadingStatus: DownloadingStatus.notStarted,
-          downloadedSize: 0,
-        );
+        savedTickets[i] = ticket;
 
         ///? Удаляем файл билета
         _ticketRepository.deleteTicketFile(ticket);
+
+        ///? Обновляем в бд
+        _ticketRepository.updateTicket(ticket);
       }
     }
     _ticketList = savedTickets;
@@ -144,7 +150,11 @@ class TicketStorageModel extends ElementaryModel {
       throw AddedTicketError(tikcetName: ticketInList.name);
     }
 
-    final newTicket = Ticket(url: url);
+    final newTicket = Ticket(
+      url: url,
+      savedFileFullPath:
+          '${await _ticketRepository.ticketsDirPath}/${UriUtil.getFilenameFromUri(url)}',
+    );
 
     ///? Добавляем билет в список модели
     _ticketList.add(newTicket);

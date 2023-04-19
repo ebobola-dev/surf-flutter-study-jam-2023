@@ -13,6 +13,7 @@ _$_Ticket _$$_TicketFromJson(Map<String, dynamic> json) => _$_Ticket(
           DownloadingStatus.notStarted,
       totalSize: json['totalSize'] as int? ?? 1,
       downloadedSize: json['downloadedSize'] as int? ?? 0,
+      savedFileFullPath: json['savedFileFullPath'] as String,
     );
 
 Map<String, dynamic> _$$_TicketToJson(_$_Ticket instance) => <String, dynamic>{
@@ -21,6 +22,7 @@ Map<String, dynamic> _$$_TicketToJson(_$_Ticket instance) => <String, dynamic>{
           _$DownloadingStatusEnumMap[instance.downloadingStatus]!,
       'totalSize': instance.totalSize,
       'downloadedSize': instance.downloadedSize,
+      'savedFileFullPath': instance.savedFileFullPath,
     };
 
 const _$DownloadingStatusEnumMap = {

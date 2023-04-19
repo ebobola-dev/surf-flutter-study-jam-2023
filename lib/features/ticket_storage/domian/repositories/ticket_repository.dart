@@ -50,7 +50,6 @@ class TicketRepository implements ITicketRepository {
     CancelToken? cancelToken,
     void Function(int p1, int p2)? onReceiveProgress,
   }) async {
-    final ticketFullFilepath = "${await ticketsDirPath}/${ticket.filename}";
     if (await ticketFileIsExists(ticket)) {
       log(
         'Warning: File "${ticket.filename}" is already exists, it will be overwritten',
@@ -59,13 +58,13 @@ class TicketRepository implements ITicketRepository {
     }
     final downloadResult = await _dioClient.downloadFile(
       url: ticket.url,
-      savePath: ticketFullFilepath,
+      savePath: ticket.savedFileFullPath,
       cancelToken: cancelToken,
       onReceiveProgress: onReceiveProgress,
     );
     if (downloadResult is SuccessfullyDownloaded) {
       log(
-        'Ticket file was successfully saved to ${ticketFullFilepath}',
+        'Ticket file was successfully saved to ${ticket.savedFileFullPath}',
         name: 'Ticket Storage Model | downloadTicket',
       );
     }
@@ -84,9 +83,7 @@ class TicketRepository implements ITicketRepository {
 
   @override
   Future<bool> ticketFileIsExists(Ticket ticket) async {
-    return await FileUtil.fileIsExists(
-      "${await ticketsDirPath}/${ticket.filename}",
-    );
+    return await FileUtil.fileIsExists(ticket.savedFileFullPath);
   }
 
   @override
@@ -104,7 +101,7 @@ class TicketRepository implements ITicketRepository {
     //? Удаляем в бд
     await DatabaseService.deleteTicket(ticket.url);
     //? Удаляем файл
-    await FileUtil.deleteFile('${await ticketsDirPath}/${ticket.filename}');
+    await FileUtil.deleteFile(ticket.savedFileFullPath);
   }
 
   @override
@@ -117,6 +114,6 @@ class TicketRepository implements ITicketRepository {
 
   @override
   Future<void> deleteTicketFile(Ticket ticket) async {
-    await FileUtil.deleteFile('${await ticketsDirPath}/${ticket.filename}');
+    await FileUtil.deleteFile(ticket.savedFileFullPath);
   }
 }

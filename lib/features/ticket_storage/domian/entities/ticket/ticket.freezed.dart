@@ -24,6 +24,7 @@ mixin _$Ticket {
   DownloadingStatus get downloadingStatus => throw _privateConstructorUsedError;
   int get totalSize => throw _privateConstructorUsedError;
   int get downloadedSize => throw _privateConstructorUsedError;
+  String get savedFileFullPath => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -39,7 +40,8 @@ abstract class $TicketCopyWith<$Res> {
       {String url,
       DownloadingStatus downloadingStatus,
       int totalSize,
-      int downloadedSize});
+      int downloadedSize,
+      String savedFileFullPath});
 }
 
 /// @nodoc
@@ -59,6 +61,7 @@ class _$TicketCopyWithImpl<$Res, $Val extends Ticket>
     Object? downloadingStatus = null,
     Object? totalSize = null,
     Object? downloadedSize = null,
+    Object? savedFileFullPath = null,
   }) {
     return _then(_value.copyWith(
       url: null == url
@@ -77,6 +80,10 @@ class _$TicketCopyWithImpl<$Res, $Val extends Ticket>
           ? _value.downloadedSize
           : downloadedSize // ignore: cast_nullable_to_non_nullable
               as int,
+      savedFileFullPath: null == savedFileFullPath
+          ? _value.savedFileFullPath
+          : savedFileFullPath // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -91,7 +98,8 @@ abstract class _$$_TicketCopyWith<$Res> implements $TicketCopyWith<$Res> {
       {String url,
       DownloadingStatus downloadingStatus,
       int totalSize,
-      int downloadedSize});
+      int downloadedSize,
+      String savedFileFullPath});
 }
 
 /// @nodoc
@@ -108,6 +116,7 @@ class __$$_TicketCopyWithImpl<$Res>
     Object? downloadingStatus = null,
     Object? totalSize = null,
     Object? downloadedSize = null,
+    Object? savedFileFullPath = null,
   }) {
     return _then(_$_Ticket(
       url: null == url
@@ -126,6 +135,10 @@ class __$$_TicketCopyWithImpl<$Res>
           ? _value.downloadedSize
           : downloadedSize // ignore: cast_nullable_to_non_nullable
               as int,
+      savedFileFullPath: null == savedFileFullPath
+          ? _value.savedFileFullPath
+          : savedFileFullPath // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -137,7 +150,8 @@ class _$_Ticket extends _Ticket {
       {required this.url,
       this.downloadingStatus = DownloadingStatus.notStarted,
       this.totalSize = 1,
-      this.downloadedSize = 0})
+      this.downloadedSize = 0,
+      required this.savedFileFullPath})
       : super._();
 
   factory _$_Ticket.fromJson(Map<String, dynamic> json) =>
@@ -154,10 +168,12 @@ class _$_Ticket extends _Ticket {
   @override
   @JsonKey()
   final int downloadedSize;
+  @override
+  final String savedFileFullPath;
 
   @override
   String toString() {
-    return 'Ticket(url: $url, downloadingStatus: $downloadingStatus, totalSize: $totalSize, downloadedSize: $downloadedSize)';
+    return 'Ticket(url: $url, downloadingStatus: $downloadingStatus, totalSize: $totalSize, downloadedSize: $downloadedSize, savedFileFullPath: $savedFileFullPath)';
   }
 
   @override
@@ -171,13 +187,15 @@ class _$_Ticket extends _Ticket {
             (identical(other.totalSize, totalSize) ||
                 other.totalSize == totalSize) &&
             (identical(other.downloadedSize, downloadedSize) ||
-                other.downloadedSize == downloadedSize));
+                other.downloadedSize == downloadedSize) &&
+            (identical(other.savedFileFullPath, savedFileFullPath) ||
+                other.savedFileFullPath == savedFileFullPath));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, url, downloadingStatus, totalSize, downloadedSize);
+  int get hashCode => Object.hash(runtimeType, url, downloadingStatus,
+      totalSize, downloadedSize, savedFileFullPath);
 
   @JsonKey(ignore: true)
   @override
@@ -198,7 +216,8 @@ abstract class _Ticket extends Ticket {
       {required final String url,
       final DownloadingStatus downloadingStatus,
       final int totalSize,
-      final int downloadedSize}) = _$_Ticket;
+      final int downloadedSize,
+      required final String savedFileFullPath}) = _$_Ticket;
   const _Ticket._() : super._();
 
   factory _Ticket.fromJson(Map<String, dynamic> json) = _$_Ticket.fromJson;
@@ -211,6 +230,8 @@ abstract class _Ticket extends Ticket {
   int get totalSize;
   @override
   int get downloadedSize;
+  @override
+  String get savedFileFullPath;
   @override
   @JsonKey(ignore: true)
   _$$_TicketCopyWith<_$_Ticket> get copyWith =>

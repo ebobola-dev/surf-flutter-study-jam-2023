@@ -15,6 +15,7 @@ class Ticket with _$Ticket {
     @Default(DownloadingStatus.notStarted) DownloadingStatus downloadingStatus,
     @Default(1) int totalSize,
     @Default(0) int downloadedSize,
+    required String savedFileFullPath,
   }) = _Ticket;
 
   /// Имя файла такое же как в ссылке

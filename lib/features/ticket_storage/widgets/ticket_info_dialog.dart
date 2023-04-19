@@ -114,11 +114,26 @@ class TicketInfoDialog extends StatelessWidget {
                                   maxLineWidth: dialogWidth - 12.0 * 2,
                                 );
                               case DownloadingStatus.downloaded:
-                                return Text(
-                                  "Успешно скачано",
+                                return RichText(
                                   textAlign: TextAlign.center,
-                                  style: ticketStorageWM.bodyStyle.copyWith(
-                                    color: Colors.green,
+                                  text: TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: 'Успешно сохранено по пути:\n',
+                                        style:
+                                            ticketStorageWM.bodyStyle.copyWith(
+                                          color: Colors.green,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text:
+                                            '"${currentTicket.savedFileFullPath}"',
+                                        style:
+                                            ticketStorageWM.bodyStyle.copyWith(
+                                          color: ticketStorageWM.primaryColor,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 );
                               case DownloadingStatus.canceledByUser:
