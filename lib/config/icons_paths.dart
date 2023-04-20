@@ -14,4 +14,6 @@ class IconPaths {
   static const refresh = "assets/icons/refresh.svg";
   static const delete = "assets/icons/trash.svg";
   static const sort = "assets/icons/sort.svg";
+  static const sortUp = "assets/icons/sort-up.svg";
+  static const sortDown = "assets/icons/sort-down.svg";
 }

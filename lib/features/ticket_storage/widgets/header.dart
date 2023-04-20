@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/popup_actions/popup_actions.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/screens/ticker_storage/ticket_storage_wm.dart';
+import 'package:surf_flutter_study_jam_2023/features/ticket_storage/widgets/sort_popup.dart';
 
 class Header extends StatelessWidget {
   final ITicketStorageWM ticketStorageWM;
@@ -18,6 +19,7 @@ class Header extends StatelessWidget {
           style: ticketStorageWM.headerStyle,
         ),
         Spacer(),
+        SortPopup(ticketStorageWM: ticketStorageWM),
         PopupMenuButton<PopupAction>(
           icon: Icon(
             Icons.more_vert_rounded,

@@ -10,6 +10,7 @@ import 'package:surf_flutter_study_jam_2023/config/icons_paths.dart';
 import 'package:surf_flutter_study_jam_2023/features/common/widgets/my_snackbar.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/downloading_status/downloading_status.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/errors/added_ticket_error.dart';
+import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/sorting/sorting_options.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/ticket/ticket.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/ticket_deleting_options/ticket_deleting_options.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/repositories/ticket_repository.dart';
@@ -33,15 +34,18 @@ class TicketStorageWM
     implements ITicketStorageWM {
   TicketStorageWM(super.model);
 
+  late final StateNotifier<SortingOptions> _sortingOptions;
   late final StateNotifier<List<Ticket>> _ticketList;
   late final StateNotifier<bool> _isInitialization;
   late final StateNotifier<String?> _activeTicketCard;
 
   @override
   void initWidgetModel() {
+    _sortingOptions = StateNotifier(initValue: SortingOptions.byAddedDate());
     _ticketList = StateNotifier(initValue: model.ticketList);
     _isInitialization = StateNotifier(initValue: false);
     _activeTicketCard = StateNotifier();
+
     model.ticketDataChanged.listen(_ticketsDataChangedHandler);
     model.errorsOnDownloading.listen(_errorOnDownloadingHandler);
     _initialize();
@@ -110,6 +114,12 @@ class TicketStorageWM
   }
 
   @override
+  Future<void> onSortingOptionTap(SortingOptions newOption) async {
+    if (_sortingOptions.value! == newOption) return;
+    _sortingOptions.accept(newOption);
+  }
+
+  @override
   Future<void> onDeleteAllTap() async {
     if (_ticketList.value!.isEmpty) {
       MySnackBar.showWarning(
@@ -160,7 +170,7 @@ class TicketStorageWM
 
   @override
   Future<void> onOpenTicketTap(ticket) async {
-    //TODO
+    //TODO open ticket file pdf view
     log(
       '',
       error: 'Ticket viewing not implemented',
@@ -297,6 +307,9 @@ class TicketStorageWM
 
   //* States
   @override
+  StateNotifier<SortingOptions> get sortingOptions => _sortingOptions;
+
+  @override
   StateNotifier<bool> get isInitialization => _isInitialization;
 
   @override
@@ -310,6 +323,7 @@ abstract class ITicketStorageWM extends IWidgetModel {
   //* Functions
   String getSizeAsString(int bytes);
   Future<void> onAddTicketTap();
+  Future<void> onSortingOptionTap(SortingOptions newOption);
   Future<void> onDownloadAllTap();
   Future<void> onDeleteAllTap();
   Future<void> onTicketDownloadIconTap(Ticket ticket);
@@ -335,6 +349,7 @@ abstract class ITicketStorageWM extends IWidgetModel {
   Map<DownloadingStatus, Widget> get ticketDownloadingIcons;
 
   //* States
+  StateNotifier<SortingOptions> get sortingOptions;
   StateNotifier<bool> get isInitialization;
   StateNotifier<List<Ticket>> get ticketList;
   StateNotifier<String?> get activeTicketCard;
