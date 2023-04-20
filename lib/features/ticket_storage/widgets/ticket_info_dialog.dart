@@ -58,9 +58,7 @@ class TicketInfoDialog extends StatelessWidget {
                             TextSpan(
                               text:
                                   DateUtil.formatDate(currentTicket.addedDate),
-                              style: ticketStorageWM.bodyStyle.copyWith(
-                                color: ticketStorageWM.primaryColor,
-                              ),
+                              style: ticketStorageWM.bodyStyle,
                             ),
                           ],
                         ),
@@ -96,10 +94,7 @@ class TicketInfoDialog extends StatelessWidget {
                                 bytes: currentTicket.totalSize,
                                 decimals: 1,
                               ),
-                              style: ticketStorageWM.bodyStyle.copyWith(
-                                color: ticketStorageWM.primaryColor,
-                              ),
-                              recognizer: TapGestureRecognizer()..onTap = () {},
+                              style: ticketStorageWM.bodyStyle,
                             ),
                           ],
                         ),
