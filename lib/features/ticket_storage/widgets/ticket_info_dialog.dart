@@ -7,6 +7,7 @@ import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entit
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/screens/ticker_storage/ticket_storage_wm.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/widgets/ticket_card/downloading_progress.dart';
 import 'package:surf_flutter_study_jam_2023/utils/animated_switcher_transition.dart';
+import 'package:surf_flutter_study_jam_2023/utils/date_utils.dart';
 import 'package:surf_flutter_study_jam_2023/utils/file_util.dart';
 
 class TicketInfoDialog extends StatelessWidget {
@@ -47,6 +48,24 @@ class TicketInfoDialog extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Добавлен ',
+                              style: ticketStorageWM.bodyStyle,
+                            ),
+                            TextSpan(
+                              text:
+                                  DateUtil.formatDate(currentTicket.addedDate),
+                              style: ticketStorageWM.bodyStyle.copyWith(
+                                color: ticketStorageWM.primaryColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12.0),
                       RichText(
                         text: TextSpan(
                           children: [

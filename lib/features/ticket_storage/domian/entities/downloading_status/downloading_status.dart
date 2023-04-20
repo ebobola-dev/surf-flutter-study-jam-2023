@@ -3,23 +3,26 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 enum DownloadingStatus {
   /// Скачивание не начато
   @JsonValue('not_started')
-  notStarted,
+  notStarted(0),
 
   /// Скачивание в процессе
   @JsonValue('in_progress')
-  inProgress,
+  inProgress(1),
 
   /// Успешно скачано
   @JsonValue('downloaded')
-  downloaded,
+  downloaded(2),
 
   /// Скачивание отменено пользователем
   @JsonValue('canceled_by_user')
-  canceledByUser,
+  canceledByUser(0),
 
   /// При скачивании возникла ошибка
   @JsonValue('has_error')
-  hasError;
+  hasError(0);
+
+  final int sortingIndex;
+  const DownloadingStatus(this.sortingIndex);
 
   ///? Можем начать скачивание, только если оно ещё не начато и не завершено
   bool get canDownload => ![

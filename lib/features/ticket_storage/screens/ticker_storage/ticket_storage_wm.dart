@@ -53,18 +53,28 @@ class TicketStorageWM
   }
 
   ///* Internal functions
+  ///? Вызываем инициализацию
   Future<void> _initialize() async {
     _isInitialization.accept(true);
-    _ticketList.accept(await model.initialize());
+    _sortTicketListAndAccept(await model.initialize());
     _isInitialization.accept(false);
   }
 
+  ///? Обработка изменений данных модели
   void _ticketsDataChangedHandler(List<Ticket> newTicketList) {
-    _ticketList.accept(newTicketList);
+    _sortTicketListAndAccept(newTicketList);
   }
 
+  ///? Обработка ошибок скачивания модели
   void _errorOnDownloadingHandler(String error) {
     MySnackBar.showError(context, error: error);
+  }
+
+  ///? Сортировка списка билетов
+  ///! Должна вызываться вместо каждого _ticketList.accept
+  void _sortTicketListAndAccept(List<Ticket> unsortedNewTicketList) {
+    unsortedNewTicketList.sort(_sortingOptions.value!.compareTicketTo());
+    _ticketList.accept(List.from(unsortedNewTicketList));
   }
 
   Widget _createIcon(String path, Color color) => SvgPicture.asset(
@@ -98,7 +108,7 @@ class TicketStorageWM
     if (newTicketUrl == null) return;
     try {
       final newTicketList = await model.addTicket(newTicketUrl);
-      _ticketList.accept(newTicketList);
+      _sortTicketListAndAccept(newTicketList);
       // ignore: use_build_context_synchronously
       MySnackBar.showSuccess(
         context,
@@ -117,6 +127,7 @@ class TicketStorageWM
   Future<void> onSortingOptionTap(SortingOptions newOption) async {
     if (_sortingOptions.value! == newOption) return;
     _sortingOptions.accept(newOption);
+    _sortTicketListAndAccept(_ticketList.value!);
   }
 
   @override

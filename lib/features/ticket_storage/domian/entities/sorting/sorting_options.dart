@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/sorting/sorting_type.dart';
+import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/ticket/ticket.dart';
 
 part 'sorting_options.freezed.dart';
 
@@ -35,6 +36,39 @@ class SortingOptions with _$SortingOptions {
         type: SortingType.byDownloaded,
         reversed: reversed,
       );
+
+  int Function(Ticket a, Ticket b) compareTicketTo() {
+    switch (type) {
+      case SortingType.byAddedDate:
+        if (!reversed) {
+          ///? По порядку
+          return (a, b) => a.addedDate.compareTo(b.addedDate);
+        } else {
+          ///? В обратном порядке
+          return (a, b) => b.addedDate.compareTo(a.addedDate);
+        }
+      case SortingType.byName:
+        if (!reversed) {
+          ///? По порядку
+          return (a, b) => a.name.compareTo(b.name);
+        } else {
+          ///? В обратном порядке
+          return (a, b) => b.name.compareTo(a.name);
+        }
+      case SortingType.byDownloaded:
+        if (reversed) {
+          ///? Скачанные - скачиваются - нескачанные
+          return (a, b) => a.downloadingStatus.sortingIndex.compareTo(
+                b.downloadingStatus.sortingIndex,
+              );
+        } else {
+          ///? Нескачанные - скачиваются - скачанные
+          return (a, b) => b.downloadingStatus.sortingIndex.compareTo(
+                a.downloadingStatus.sortingIndex,
+              );
+        }
+    }
+  }
 }
 
 final List<SortingOptions> allSotrignOptions = List.generate(

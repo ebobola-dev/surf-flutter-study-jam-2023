@@ -21,6 +21,8 @@ Ticket _$TicketFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Ticket {
   String get url => throw _privateConstructorUsedError;
+  @JsonKey(toJson: DateUtil.dateToString, fromJson: DateUtil.dateFromString)
+  DateTime get addedDate => throw _privateConstructorUsedError;
   DownloadingStatus get downloadingStatus => throw _privateConstructorUsedError;
   int get totalSize => throw _privateConstructorUsedError;
   int get downloadedSize => throw _privateConstructorUsedError;
@@ -38,6 +40,8 @@ abstract class $TicketCopyWith<$Res> {
   @useResult
   $Res call(
       {String url,
+      @JsonKey(toJson: DateUtil.dateToString, fromJson: DateUtil.dateFromString)
+          DateTime addedDate,
       DownloadingStatus downloadingStatus,
       int totalSize,
       int downloadedSize,
@@ -58,6 +62,7 @@ class _$TicketCopyWithImpl<$Res, $Val extends Ticket>
   @override
   $Res call({
     Object? url = null,
+    Object? addedDate = null,
     Object? downloadingStatus = null,
     Object? totalSize = null,
     Object? downloadedSize = null,
@@ -68,6 +73,10 @@ class _$TicketCopyWithImpl<$Res, $Val extends Ticket>
           ? _value.url
           : url // ignore: cast_nullable_to_non_nullable
               as String,
+      addedDate: null == addedDate
+          ? _value.addedDate
+          : addedDate // ignore: cast_nullable_to_non_nullable
+              as DateTime,
       downloadingStatus: null == downloadingStatus
           ? _value.downloadingStatus
           : downloadingStatus // ignore: cast_nullable_to_non_nullable
@@ -96,6 +105,8 @@ abstract class _$$_TicketCopyWith<$Res> implements $TicketCopyWith<$Res> {
   @useResult
   $Res call(
       {String url,
+      @JsonKey(toJson: DateUtil.dateToString, fromJson: DateUtil.dateFromString)
+          DateTime addedDate,
       DownloadingStatus downloadingStatus,
       int totalSize,
       int downloadedSize,
@@ -113,6 +124,7 @@ class __$$_TicketCopyWithImpl<$Res>
   @override
   $Res call({
     Object? url = null,
+    Object? addedDate = null,
     Object? downloadingStatus = null,
     Object? totalSize = null,
     Object? downloadedSize = null,
@@ -123,6 +135,10 @@ class __$$_TicketCopyWithImpl<$Res>
           ? _value.url
           : url // ignore: cast_nullable_to_non_nullable
               as String,
+      addedDate: null == addedDate
+          ? _value.addedDate
+          : addedDate // ignore: cast_nullable_to_non_nullable
+              as DateTime,
       downloadingStatus: null == downloadingStatus
           ? _value.downloadingStatus
           : downloadingStatus // ignore: cast_nullable_to_non_nullable
@@ -148,6 +164,8 @@ class __$$_TicketCopyWithImpl<$Res>
 class _$_Ticket extends _Ticket {
   const _$_Ticket(
       {required this.url,
+      @JsonKey(toJson: DateUtil.dateToString, fromJson: DateUtil.dateFromString)
+          required this.addedDate,
       this.downloadingStatus = DownloadingStatus.notStarted,
       this.totalSize = 1,
       this.downloadedSize = 0,
@@ -159,6 +177,9 @@ class _$_Ticket extends _Ticket {
 
   @override
   final String url;
+  @override
+  @JsonKey(toJson: DateUtil.dateToString, fromJson: DateUtil.dateFromString)
+  final DateTime addedDate;
   @override
   @JsonKey()
   final DownloadingStatus downloadingStatus;
@@ -173,7 +194,7 @@ class _$_Ticket extends _Ticket {
 
   @override
   String toString() {
-    return 'Ticket(url: $url, downloadingStatus: $downloadingStatus, totalSize: $totalSize, downloadedSize: $downloadedSize, savedFileFullPath: $savedFileFullPath)';
+    return 'Ticket(url: $url, addedDate: $addedDate, downloadingStatus: $downloadingStatus, totalSize: $totalSize, downloadedSize: $downloadedSize, savedFileFullPath: $savedFileFullPath)';
   }
 
   @override
@@ -182,6 +203,8 @@ class _$_Ticket extends _Ticket {
         (other.runtimeType == runtimeType &&
             other is _$_Ticket &&
             (identical(other.url, url) || other.url == url) &&
+            (identical(other.addedDate, addedDate) ||
+                other.addedDate == addedDate) &&
             (identical(other.downloadingStatus, downloadingStatus) ||
                 other.downloadingStatus == downloadingStatus) &&
             (identical(other.totalSize, totalSize) ||
@@ -194,8 +217,8 @@ class _$_Ticket extends _Ticket {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, url, downloadingStatus,
-      totalSize, downloadedSize, savedFileFullPath);
+  int get hashCode => Object.hash(runtimeType, url, addedDate,
+      downloadingStatus, totalSize, downloadedSize, savedFileFullPath);
 
   @JsonKey(ignore: true)
   @override
@@ -214,6 +237,8 @@ class _$_Ticket extends _Ticket {
 abstract class _Ticket extends Ticket {
   const factory _Ticket(
       {required final String url,
+      @JsonKey(toJson: DateUtil.dateToString, fromJson: DateUtil.dateFromString)
+          required final DateTime addedDate,
       final DownloadingStatus downloadingStatus,
       final int totalSize,
       final int downloadedSize,
@@ -224,6 +249,9 @@ abstract class _Ticket extends Ticket {
 
   @override
   String get url;
+  @override
+  @JsonKey(toJson: DateUtil.dateToString, fromJson: DateUtil.dateFromString)
+  DateTime get addedDate;
   @override
   DownloadingStatus get downloadingStatus;
   @override

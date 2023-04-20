@@ -152,6 +152,7 @@ class TicketStorageModel extends ElementaryModel {
 
     final newTicket = Ticket(
       url: url,
+      addedDate: DateTime.now(),
       savedFileFullPath:
           '${await _ticketRepository.ticketsDirPath}/${UriUtil.getFilenameFromUri(url)}',
     );

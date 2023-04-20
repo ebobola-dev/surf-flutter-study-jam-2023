@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:surf_flutter_study_jam_2023/features/ticket_storage/domian/entities/downloading_status/downloading_status.dart';
+import 'package:surf_flutter_study_jam_2023/utils/date_utils.dart';
 import 'package:surf_flutter_study_jam_2023/utils/file_util.dart';
 import 'package:surf_flutter_study_jam_2023/utils/uri_util.dart';
 
@@ -12,6 +13,8 @@ class Ticket with _$Ticket {
 
   const factory Ticket({
     required String url,
+    @JsonKey(toJson: DateUtil.dateToString, fromJson: DateUtil.dateFromString)
+        required DateTime addedDate,
     @Default(DownloadingStatus.notStarted) DownloadingStatus downloadingStatus,
     @Default(1) int totalSize,
     @Default(0) int downloadedSize,

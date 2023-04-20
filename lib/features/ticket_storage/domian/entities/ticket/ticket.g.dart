@@ -8,6 +8,7 @@ part of 'ticket.dart';
 
 _$_Ticket _$$_TicketFromJson(Map<String, dynamic> json) => _$_Ticket(
       url: json['url'] as String,
+      addedDate: DateUtil.dateFromString(json['addedDate'] as String),
       downloadingStatus: $enumDecodeNullable(
               _$DownloadingStatusEnumMap, json['downloadingStatus']) ??
           DownloadingStatus.notStarted,
@@ -18,6 +19,7 @@ _$_Ticket _$$_TicketFromJson(Map<String, dynamic> json) => _$_Ticket(
 
 Map<String, dynamic> _$$_TicketToJson(_$_Ticket instance) => <String, dynamic>{
       'url': instance.url,
+      'addedDate': DateUtil.dateToString(instance.addedDate),
       'downloadingStatus':
           _$DownloadingStatusEnumMap[instance.downloadingStatus]!,
       'totalSize': instance.totalSize,
